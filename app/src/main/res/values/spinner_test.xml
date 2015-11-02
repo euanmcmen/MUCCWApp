@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="subreddit_array">
+        <item>[TEST] Glasgow</item>
+        <item>[TEST] Edinburgh</item>
+        <item>[TEST] Manchester</item>
+    </string-array>
+</resources>
