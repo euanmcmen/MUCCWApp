@@ -3,9 +3,9 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Euan on 03/11/2015.
- */
+//Euan McMenemin
+//S1125095
+
 public class Landmark implements Parcelable
 {
     private String titleText;
@@ -13,6 +13,16 @@ public class Landmark implements Parcelable
     private Bitmap image;
     private double latitude;
     private double longitude;
+
+    public Landmark()
+    {
+        //Default constructor.
+        titleText = "Default";
+        descriptionText = "Default";
+        image = null;
+        latitude = 0.0;
+        longitude = 0.0;
+    }
 
     public Landmark(String title, String desc, Bitmap img, double lat, double lon)
     {
@@ -68,7 +78,7 @@ public class Landmark implements Parcelable
         return latitude;
     }
 
-    public void setLatitude(int latitude)
+    public void setLatitude(double latitude)
     {
         this.latitude = latitude;
     }
@@ -78,7 +88,7 @@ public class Landmark implements Parcelable
         return longitude;
     }
 
-    public void setLongitude(int longitude)
+    public void setLongitude(double longitude)
     {
         this.longitude = longitude;
     }

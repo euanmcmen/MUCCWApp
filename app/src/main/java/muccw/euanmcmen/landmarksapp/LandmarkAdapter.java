@@ -9,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
 
-/**
- * Created by Euan on 03/11/2015.
- */
+//Euan McMenemin
+//S1125095
+
 public class LandmarkAdapter extends ArrayAdapter<Landmark>
 {
     public LandmarkAdapter(Context context, int resource, ArrayList<Landmark> landmarks)

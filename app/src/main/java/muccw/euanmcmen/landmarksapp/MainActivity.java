@@ -2,11 +2,9 @@ package muccw.euanmcmen.landmarksapp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,11 +13,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
+//Euan McMenemin
+//S1125095
 
 public class MainActivity extends Activity implements View.OnClickListener
 {
@@ -138,64 +141,65 @@ public class MainActivity extends Activity implements View.OnClickListener
             //      Pressing that button takes the user back to this screen and calls this method.
             //      User prefs could be used to hold the value for the update flag, but not reveal it to the user.
 
+
+            //Show a friendly toast to show what's happening.
+            Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
+
             //Initialise the landmarks list
             landmarks = new ArrayList<Landmark>();
 
-            //Add test landmarks.
-            try
-            {
-                Landmark test = new Landmark("Kelvingrove Art Gallery and Museum",
-                        "Kelvingrove museum has been the most popular free-to-enter visitor attraction in Glasgow, and the most visited museum in the United Kingdom outside London.",
-                        new GetImageFromURL().execute("https://i.imgur.com/mtIYILo.jpg").get(),
-                        55.868301,
-                        -4.291835);
+            //Run the updater
+            //In future, this will get the url from the database.
+            new Updater().execute("https://www.reddit.com/r/MUCCW_Glasgow/.rss");
 
-                Landmark test2 = new Landmark("Glasgow Science Centre",
-                        "Glasgow Science Centre is a visitor attraction located in the Clyde Waterfront Regeneration area on the south bank of the River Clyde in Glasgow.",
-                        new GetImageFromURL().execute("https://i.imgur.com/FkItbIo.jpg").get(),
-                        55.858542,
-                        -4.293803);
-
-                landmarks.add(test);
-                landmarks.add(test2);
-            } catch (Exception e)
-            {
-                Log.e("Error", "Error thrown from getImageFromURL call.\r\n" + e.getMessage());
-            }
-
-
-            //Finally, set the update flag to false.
+            //Set the update flag to false.
             shouldUpdate = false;
         }
     }
 
-    class GetImageFromURL extends AsyncTask<String, Void, Bitmap>
+    class Updater extends AsyncTask<String, Void, Void>
     {
-
         @Override
-        protected Bitmap doInBackground(String... params)
+        protected Void doInBackground(String ... Params) //This is the city subreddit url.
         {
             try
             {
-                URL imageURL = new URL(params[0]);  //Params is a collection of strings.
-                Bitmap image = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
-                return image;
-            }
-            catch (NetworkOnMainThreadException e)
-            {
-                Log.e("Error", "Network exception thrown.\r\n"+e.getMessage());
-                return null;
-            }
-            catch (MalformedURLException e)
-            {
-                Log.e("Error", "MalformedURL exception thrown.\r\n"+e.getMessage());
-                return null;
+                Log.d("Main.Updater.Backgrnd.", "In the background method.");
+                //Get the descriptions of each landmark on the subreddit.
+                String result = HTTPFeedReader.ReadXMLFeed(Params[0]);
+
+                Log.d("Main.Updater.Backgrnd.", "Result string:\r\n" + result);
+
+                //If the result string isn't null, do some stuff with it.  It shouldn't be null.
+                if (!result.equals(""))
+                {
+                    //Create arraylist collection of landmarks.
+                    XMLParser parser = new XMLParser(result);
+                    landmarks = parser.CreateCollection();
+                }
             }
             catch (IOException e)
             {
-                Log.e("Error", "IO exception thrown.\r\n"+e.getMessage());
-                return null;
+                e.printStackTrace();
             }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            catch (ExecutionException e)
+            {
+                e.printStackTrace();
+            }
+            catch (XmlPullParserException e)
+            {
+                e.printStackTrace();
+            }
+            catch (NullPointerException e)
+            {
+                e.printStackTrace();
+            }
+
+            return null;
         }
     }
 }

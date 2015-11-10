@@ -8,9 +8,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import java.util.ArrayList;
 
-/**
- * Created by Euan on 31/10/2015.
- */
+//Euan McMenemin
+//S1125095
+
 public class ListActivity extends Activity implements View.OnClickListener
 {
     ListView list;
