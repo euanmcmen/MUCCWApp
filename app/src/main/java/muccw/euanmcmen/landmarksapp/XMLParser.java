@@ -92,7 +92,6 @@ public class XMLParser
 					{
 						//Write the title.
 						landmark.setTitle(tagContent);
-
 						Log.d("XMLParser.CreateCollec.", "Added a title.");
 					}
 
@@ -100,7 +99,6 @@ public class XMLParser
 					{
 						//Write the Description.
 						landmark.setDescriptionText(tagContent);
-
 						Log.d("XMLParser.CreateCollec.", "Added some description.");
 					}
 
@@ -117,7 +115,6 @@ public class XMLParser
 					if (tagName.equals("ItemLat"))
 					{
 						//Write the Latitude.
-						Log.d("XMLParser.CreateCollec.", "Lat content: " + tagContent);
 						landmark.setLatitude(Double.parseDouble(tagContent));
 						Log.d("XMLParser.CreateCollec.", "Added lat.");
 					}

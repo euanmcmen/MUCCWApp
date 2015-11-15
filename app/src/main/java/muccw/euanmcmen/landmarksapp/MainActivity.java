@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -36,6 +37,9 @@ public class MainActivity extends Activity implements View.OnClickListener
     //Create the landmark list.
     ArrayList<Landmark> landmarks = null;
 
+    //Create the database manager object.
+    DatabaseManager manager = null;
+
     //Update flag.
     boolean shouldUpdate = true;
 
@@ -44,6 +48,19 @@ public class MainActivity extends Activity implements View.OnClickListener
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Set up the database manager to read the city information from.
+        manager = new DatabaseManager(this, "CourseworkDB.s3db", null, 1);
+        try
+        {
+            manager.dbCreate();
+            Log.d("Main.OnCreate", "Database created successfully.\r\nDatabase name: " + manager.getDatabaseName());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Log.d("Main.OnCreate", "Database didn't work.");
+        }
 
         //Set up the buttons.
         btnViewScreen = (Button) findViewById(R.id.btnView);
@@ -55,14 +72,32 @@ public class MainActivity extends Activity implements View.OnClickListener
         rbList = (RadioButton) findViewById(R.id.rbList);
         rbMap = (RadioButton) findViewById(R.id.rbMap);
 
-        //Find the spinner and set its adapter to read from the spinner_test resource file.
+        //Set up cities array with database manager class.
+        String[] citiesArray = manager.getCities();
+
+        //Set up the array adapter to use the cities string array.
         spinner = (Spinner) findViewById(R.id.spSubreddits);
-        ArrayAdapter<CharSequence> spAdapter = ArrayAdapter.createFromResource(this, R.array.subreddit_array, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> spAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, citiesArray);
         spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spAdapter);
 
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            {
+                shouldUpdate = true;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView)
+            {
+                return;
+            }
+
+        });
         //Run the update method.
-        updateData();
+        //updateData();
     }
 
     @Override
@@ -93,74 +128,83 @@ public class MainActivity extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v)
     {
-        //Log.d("Tag", "Clicked: " + v.getId() + "\r\nView ID: " + btnViewScreen.getId());
-
         if (v.getId() == btnViewScreen.getId())
         {
             //Back out if, somehow, neither radio button is checked.
             if (!rbMap.isChecked() && !rbList.isChecked())
             {
-                Log.d("Main.onClick", "Breaking out early.");
+                Log.d("Main.onClick", "No Radio Button Selected.");
                 return;
             }
 
-            //Update the landmarks.
-            //Normally this would be controlled with an if statement and a flag, but not yet.
-            updateData();
-
-            //Create the intent
-            Intent newIntent = null;
-
-            //Decide which intent to use by checking the radio buttons.
-            if (rbList.isChecked())
+            //Update the landmarks list if shouldUpdate is true.
+            //Updating the list also calls openViewScreen which displays the new intent.
+            //If we don't need to update the list, simply display the new intent with OVS call.
+            if (shouldUpdate)
             {
-                //Open the list view screen.
-                newIntent = new Intent(getApplicationContext(), ListActivity.class);
+                updateData();
             }
-            else if (rbMap.isChecked())
+            else
             {
-                //Open the map view screen.
+                openViewScreen();
             }
-
-            //Load the list onto the intent.
-            newIntent.putParcelableArrayListExtra("list", landmarks);
-
-            //Launch the intent.
-            startActivity(newIntent);
         }
     }
 
     public void updateData()
     {
-        if (shouldUpdate)
+        Log.d("Main.update", "Running update method.");
+        //The parser classes would also be called here.
+        //This screen should also not "repeat" the parsing when the user navigates back.
+        //Updating the screen should be done by the update button in the menu.
+        //      Pressing that button takes the user back to this screen and calls this method.
+        //      User prefs could be used to hold the value for the update flag, but not reveal it to the user.
+
+
+        //Show a friendly toast to show what's happening.
+        Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
+
+        //Initialise the landmarks list
+        landmarks = new ArrayList<Landmark>();
+
+        //Retrieve city URL from database depending on selected value in the spinner.
+        //This can also be used to set the population canvas thing.
+        CityInfo city = manager.getCity(spinner.getSelectedItem().toString());
+
+        //Run the updater
+        new Updater().execute(city.getUrl());
+
+        //Set the update flag to false.
+        shouldUpdate = false;
+    }
+
+    public void openViewScreen()
+    {
+        //Create the intent
+        Intent newIntent = null;
+
+        //Decide which intent to use by checking the radio buttons.
+        if (rbList.isChecked())
         {
-            Log.d("Main.update", "Running update method.");
-            //The parser classes would also be called here.
-            //This screen should also not "repeat" the parsing when the user navigates back.
-            //Updating the screen should be done by the update button in the menu.
-            //      Pressing that button takes the user back to this screen and calls this method.
-            //      User prefs could be used to hold the value for the update flag, but not reveal it to the user.
-
-
-            //Show a friendly toast to show what's happening.
-            Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
-
-            //Initialise the landmarks list
-            landmarks = new ArrayList<Landmark>();
-
-            //Run the updater
-            //In future, this will get the url from the database.
-            new Updater().execute("https://www.reddit.com/r/MUCCW_Glasgow/.rss");
-
-            //Set the update flag to false.
-            shouldUpdate = false;
+            //Open the list view screen.
+            newIntent = new Intent(getApplicationContext(), ListActivity.class);
         }
+        else if (rbMap.isChecked())
+        {
+            //Open the map view screen.
+        }
+
+        //Load the list onto the intent.
+        newIntent.putParcelableArrayListExtra("list", landmarks);
+
+        //Launch the intent.
+        startActivity(newIntent);
     }
 
     class Updater extends AsyncTask<String, Void, Void>
     {
         @Override
-        protected Void doInBackground(String ... Params) //This is the city subreddit url.
+        protected Void doInBackground(String ... Params) //This is the city url.
         {
             try
             {
@@ -200,6 +244,15 @@ public class MainActivity extends Activity implements View.OnClickListener
             }
 
             return null;
+        }
+
+        protected void onPostExecute(Void result)
+        {
+            //Show another friendly toast.
+            Toast.makeText(getApplicationContext(), "Complete!", Toast.LENGTH_SHORT).show();
+
+            //Start new intent.
+            openViewScreen();
         }
     }
 }
