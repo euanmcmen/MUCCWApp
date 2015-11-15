@@ -3,6 +3,8 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
+
 //Euan McMenemin
 //S1125095
 
@@ -93,6 +95,11 @@ public class Landmark implements Parcelable
         this.longitude = longitude;
     }
 
+    public LatLng getCoordinates()
+    {
+        return new LatLng(latitude, longitude);
+    }
+
     @Override
     public int describeContents()
     {
@@ -121,4 +128,6 @@ public class Landmark implements Parcelable
             return new Landmark[size];
         }
     };
+
+
 }

@@ -54,12 +54,10 @@ public class MainActivity extends Activity implements View.OnClickListener
         try
         {
             manager.dbCreate();
-            Log.d("Main.OnCreate", "Database created successfully.\r\nDatabase name: " + manager.getDatabaseName());
         }
         catch (IOException e)
         {
             e.printStackTrace();
-            Log.d("Main.OnCreate", "Database didn't work.");
         }
 
         //Set up the buttons.
@@ -81,11 +79,14 @@ public class MainActivity extends Activity implements View.OnClickListener
         spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spAdapter);
 
+        //Set up the spinner item changed listener.
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
+                //When the spinner value changes, set the update flag to true.
+                //This way, the application will parse the new city.
                 shouldUpdate = true;
             }
 
@@ -96,8 +97,6 @@ public class MainActivity extends Activity implements View.OnClickListener
             }
 
         });
-        //Run the update method.
-        //updateData();
     }
 
     @Override
@@ -180,7 +179,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 
     public void openViewScreen()
     {
-        //Create the intent
+        //Create the intent with a null value.
         Intent newIntent = null;
 
         //Decide which intent to use by checking the radio buttons.
@@ -192,6 +191,7 @@ public class MainActivity extends Activity implements View.OnClickListener
         else if (rbMap.isChecked())
         {
             //Open the map view screen.
+            newIntent = new Intent(getApplicationContext(), MapActivity.class);
         }
 
         //Load the list onto the intent.
