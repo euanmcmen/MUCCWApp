@@ -28,10 +28,9 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends Activity implements View.OnClickListener
 {
     //Views
-    Button btnViewScreen;
+    Button btnList;
+    Button btnMap;
     Button btnManage;
-    RadioButton rbList;
-    RadioButton rbMap;
     Spinner spinner;
 
     //Create the landmark list.
@@ -42,6 +41,9 @@ public class MainActivity extends Activity implements View.OnClickListener
 
     //Update flag.
     boolean shouldUpdate = true;
+
+    //Flag to determine whether the app will display a list screen or map screen.
+    boolean displayAsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,14 +63,12 @@ public class MainActivity extends Activity implements View.OnClickListener
         }
 
         //Set up the buttons.
-        btnViewScreen = (Button) findViewById(R.id.btnView);
-        btnViewScreen.setOnClickListener(this);
+        btnList = (Button) findViewById(R.id.btnList);
+        btnList.setOnClickListener(this);
+        btnMap = (Button) findViewById(R.id.btnMap);
+        btnMap.setOnClickListener(this);
         btnManage = (Button) findViewById(R.id.btnManage);
         btnManage.setOnClickListener(this);
-
-        //Set up the radio buttons.
-        rbList = (RadioButton) findViewById(R.id.rbList);
-        rbMap = (RadioButton) findViewById(R.id.rbMap);
 
         //Set up cities array with database manager class.
         String[] citiesArray = manager.getCities();
@@ -127,14 +127,28 @@ public class MainActivity extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v)
     {
-        if (v.getId() == btnViewScreen.getId())
+        if (v.getId() == btnList.getId())
         {
-            //Back out if, somehow, neither radio button is checked.
-            if (!rbMap.isChecked() && !rbList.isChecked())
+            //Set the displayAsList value to true.
+            displayAsList = true;
+
+            //Update the landmarks list if shouldUpdate is true.
+            //Updating the list also calls openViewScreen which displays the new intent.
+            //If we don't need to update the list, simply display the new intent with OVS call.
+            if (shouldUpdate)
             {
-                Log.d("Main.onClick", "No Radio Button Selected.");
-                return;
+                updateData();
             }
+            else
+            {
+                openViewScreen();
+            }
+        }
+
+        if (v.getId() == btnMap.getId())
+        {
+            //Set the displayAsList value to false, as we want to display as map.
+            displayAsList = false;
 
             //Update the landmarks list if shouldUpdate is true.
             //Updating the list also calls openViewScreen which displays the new intent.
@@ -183,12 +197,12 @@ public class MainActivity extends Activity implements View.OnClickListener
         Intent newIntent = null;
 
         //Decide which intent to use by checking the radio buttons.
-        if (rbList.isChecked())
+        if (displayAsList)
         {
             //Open the list view screen.
             newIntent = new Intent(getApplicationContext(), ListActivity.class);
         }
-        else if (rbMap.isChecked())
+        else
         {
             //Open the map view screen.
             newIntent = new Intent(getApplicationContext(), MapActivity.class);

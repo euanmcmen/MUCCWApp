@@ -12,66 +12,53 @@
         android:id="@+id/tvLabel"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:layout_marginTop="10dp"/>
 
     <Spinner
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spSubreddits"
         android:clickable="false"
         android:spinnerMode="dropdown"
         android:layout_below="@id/tvLabel"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="View Selection"
+        android:id="@+id/tvLabel2"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:layout_below="@+id/spSubreddits"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="View List"
+        android:id="@+id/btnList"
+        android:layout_below="@+id/tvLabel2"
         android:layout_alignParentStart="true"/>
 
     <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="Manage"
-        android:id="@+id/btnManage"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/tvLabel"/>
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/spSubreddits"
-        android:layout_alignParentStart="true"
-        android:id="@+id/radioGroup">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="View Selection"
-            android:id="@+id/tvLabel2"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="15dp"/>
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="View as list"
-            android:id="@+id/rbList"
-            android:checked="true"/>
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="View as map"
-            android:id="@+id/rbMap"
-            android:checked="false"/>
-    </RadioGroup>
+        android:text="View Map"
+        android:id="@+id/btnMap"
+        android:layout_below="@+id/tvLabel2"
+        android:layout_alignParentEnd="true"/>
 
     <Button
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View landmarks"
-        android:id="@+id/btnView"
-        android:layout_below="@+id/radioGroup"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"/>
+        android:text="Manage Cities"
+        android:id="@+id/btnManage"
+        android:layout_below="@+id/spSubreddits"
+        android:layout_alignParentEnd="true"/>
 
 
 </RelativeLayout>
