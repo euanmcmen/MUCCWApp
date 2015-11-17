@@ -16,6 +16,8 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -44,6 +46,9 @@ public class MainActivity extends Activity implements View.OnClickListener
 
     //Flag to determine whether the app will display a list screen or map screen.
     boolean displayAsList;
+
+    //This holds the city retrieved from the database.
+    CityInfo city;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -181,8 +186,8 @@ public class MainActivity extends Activity implements View.OnClickListener
         landmarks = new ArrayList<Landmark>();
 
         //Retrieve city URL from database depending on selected value in the spinner.
-        //This can also be used to set the population canvas thing.
-        CityInfo city = manager.getCity(spinner.getSelectedItem().toString());
+        //This can also be used to set the population canvas thing, and the latlang of the city for the map.
+        city = manager.getCity(spinner.getSelectedItem().toString());
 
         //Run the updater
         new Updater().execute(city.getUrl());
@@ -206,6 +211,7 @@ public class MainActivity extends Activity implements View.OnClickListener
         {
             //Open the map view screen.
             newIntent = new Intent(getApplicationContext(), MapActivity.class);
+            newIntent.putExtra("coords", city.getCoordinates());
         }
 
         //Load the list onto the intent.

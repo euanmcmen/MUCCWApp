@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.ArrayAdapter;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -39,12 +40,15 @@ public class MapActivity extends FragmentActivity
         //Get the intent to retrieve the landmark arraylist
         Intent intent = getIntent();
         ArrayList<Landmark> landmarksList = intent.getParcelableArrayListExtra("list");
+        LatLng coords = intent.getParcelableExtra("coords");
 
         //Set up the map.
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.fragMap)).getMap();
         if (map != null)
         {
             //Move the camera to the centre of the city.
+            //Use a temp value for now, and read from database later.
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 12));
             map.setMyLocationEnabled(true);
             map.getUiSettings().setCompassEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
@@ -54,9 +58,6 @@ public class MapActivity extends FragmentActivity
 
     public void placeMarkers(ArrayList<Landmark> lmList)
     {
-        //Create list of latlng objects.
-        //ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
-
         //Place markers by iterating through each landmark.
         for (Landmark lm : lmList)
         {

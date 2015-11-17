@@ -30,6 +30,8 @@ public class DatabaseManager extends SQLiteOpenHelper
     public static final String COL_CITY = "city";
     public static final String COL_URL = "url";
     public static final String COL_POPULATION = "population";
+    public static final String COL_LATITUDE = "latitude";
+    public static final String COL_LONGITUDE = "longitude";
 
     private final Context appContext;
 
@@ -47,7 +49,9 @@ public class DatabaseManager extends SQLiteOpenHelper
                     + "("
                     + COL_CITY + " TEXT PRIMARY KEY,"
                     + COL_URL + " TEXT,"
-                    + COL_POPULATION + " INTEGER"
+                    + COL_POPULATION + " INTEGER,"
+                    + COL_LATITUDE + " FLOAT,"
+                    + COL_LONGITUDE + " FLOAT"
                     + ")";
             db.execSQL(CREATE_TABLE);
     }
@@ -155,6 +159,8 @@ public class DatabaseManager extends SQLiteOpenHelper
         values.put(COL_CITY, dbEntry.getCity());
         values.put(COL_URL, dbEntry.getUrl());
         values.put(COL_POPULATION, dbEntry.getPopulation());
+        values.put(COL_LATITUDE, dbEntry.getLatitude());
+        values.put(COL_LONGITUDE, dbEntry.getLongitude());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -178,6 +184,8 @@ public class DatabaseManager extends SQLiteOpenHelper
             result.setCity(cursor.getString(0));
             result.setUrl(cursor.getString(1));
             result.setPopulation(Integer.parseInt(cursor.getString(2)));
+            result.setLatitude(Double.parseDouble(cursor.getString(3)));
+            result.setLongitude(Double.parseDouble(cursor.getString(4)));
             cursor.close();
         }
         else
