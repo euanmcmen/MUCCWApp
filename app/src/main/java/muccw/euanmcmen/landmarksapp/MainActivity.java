@@ -59,10 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        //Set the screen to portrait.
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         setContentView(R.layout.activity_main);
 
         //Set up the about dialog.
@@ -125,6 +122,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // Handle action bar item clicks here. The action bar will
@@ -135,19 +138,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (id)
         {
-            case R.id.Quit:
-                finish();
-                return true;
             case R.id.About:
                 DialogFragment aboutDialog = new AboutDialog();
-                aboutDialog.show(dlgAbout, "About_Dialog");
+                aboutDialog.show(getFragmentManager(), "About_Dialog");
                 return true;
             case R.id.Preferences:
                 //Display the playerprefs screen.
                 //Later, changing the spinner will change the "preferred city" of the user.
-                return true;
-            case R.id.Home:
-                //Return to the home intent.
                 return true;
 
             default:

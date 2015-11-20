@@ -1,10 +1,15 @@
 package muccw.euanmcmen.landmarksapp;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,7 +30,7 @@ import java.util.ArrayList;
 //This class should retrieve the landmark list from a bundle, then create latlng objects using the lat and long values from each landmark object.
 //It should then display the points on the map.
 //The camera should also focus in on the "general" area of the town.
-public class MapActivity extends FragmentActivity
+public class MapActivity extends AppCompatActivity
 {
     //The map.
     GoogleMap map;
@@ -97,4 +102,37 @@ public class MapActivity extends FragmentActivity
 
         return marker;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id)
+        {
+            case R.id.About:
+                DialogFragment aboutDialog = new AboutDialog();
+                aboutDialog.show(getFragmentManager(), "About_Dialog");
+                return true;
+            case R.id.Preferences:
+                //Display the playerprefs screen.
+                //Later, changing the spinner will change the "preferred city" of the user.
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }
