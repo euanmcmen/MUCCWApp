@@ -1,10 +1,13 @@
 package muccw.euanmcmen.landmarksapp;
 
-import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,7 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -27,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 //Euan McMenemin
 //S1125095
 
-public class MainActivity extends Activity implements View.OnClickListener
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     //Views
     Button btnList;
@@ -50,11 +52,21 @@ public class MainActivity extends Activity implements View.OnClickListener
     //This holds the city retrieved from the database.
     CityInfo city;
 
+    //The about dialog.
+    FragmentManager dlgAbout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        //Set the screen to portrait.
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         setContentView(R.layout.activity_main);
+
+        //Set up the about dialog.
+        dlgAbout = this.getFragmentManager();
 
         //Set up the database manager to read the city information from.
         manager = new DatabaseManager(this, "CourseworkDB.s3db", null, 1);
@@ -120,26 +132,42 @@ public class MainActivity extends Activity implements View.OnClickListener
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
+        switch (id)
+        {
+            case R.id.Quit:
+                finish();
+                return true;
+            case R.id.About:
+                DialogFragment aboutDialog = new AboutDialog();
+                aboutDialog.show(dlgAbout, "About_Dialog");
+                return true;
+            case R.id.Preferences:
+                //Display the playerprefs screen.
+                //Later, changing the spinner will change the "preferred city" of the user.
+                return true;
+            case R.id.Home:
+                //Return to the home intent.
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
     public void onClick(View v)
     {
+        //Update the landmarks list if shouldUpdate is true.
+        //Updating the list also calls openViewScreen which displays the new intent.
+        //If we don't need to update the list, simply display the new intent with OVS call.
+        //Change displayAsList flag depending on what the user pressed.
+
         if (v.getId() == btnList.getId())
         {
-            //Set the displayAsList value to true.
+            //Set the displayAsList value to true.  We want the list.
             displayAsList = true;
 
-            //Update the landmarks list if shouldUpdate is true.
-            //Updating the list also calls openViewScreen which displays the new intent.
-            //If we don't need to update the list, simply display the new intent with OVS call.
             if (shouldUpdate)
             {
                 updateData();
@@ -155,9 +183,6 @@ public class MainActivity extends Activity implements View.OnClickListener
             //Set the displayAsList value to false, as we want to display as map.
             displayAsList = false;
 
-            //Update the landmarks list if shouldUpdate is true.
-            //Updating the list also calls openViewScreen which displays the new intent.
-            //If we don't need to update the list, simply display the new intent with OVS call.
             if (shouldUpdate)
             {
                 updateData();

@@ -52,6 +52,7 @@ public class MapActivity extends FragmentActivity
             map.setMyLocationEnabled(true);
             map.getUiSettings().setCompassEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
+            map.getUiSettings().setZoomControlsEnabled(true);
             placeMarkers(landmarksList);
         }
     }
@@ -64,18 +65,15 @@ public class MapActivity extends FragmentActivity
             //Get marker title.
             String mkrTitle = lm.getTitle();
 
-            //Get marker description.
-            String mkrDesc = lm.getDescriptionText();
-
             //Get marker location.
             LatLng mkrPosition = lm.getCoordinates();
 
-            MarkerOptions markerOptions = setMarkerOptions(mkrTitle, mkrDesc, mkrPosition, 120f, true);
+            MarkerOptions markerOptions = setMarkerOptions(mkrTitle, mkrPosition, 120f, true);
             map.addMarker(markerOptions);
         }
     }
 
-    public MarkerOptions setMarkerOptions(String title, String desc, LatLng position, float colour, boolean shouldCentreAnchor)
+    public MarkerOptions setMarkerOptions(String title, LatLng position, float colour, boolean shouldCentreAnchor)
     {
         float AnchorX;
         float AnchorY;
@@ -95,7 +93,7 @@ public class MapActivity extends FragmentActivity
         }
 
         //Create marker from parameters
-        MarkerOptions marker = new MarkerOptions().title(title).snippet(desc).icon(BitmapDescriptorFactory.defaultMarker()).anchor(AnchorX, AnchorY).position(position);
+        MarkerOptions marker = new MarkerOptions().title(title).icon(BitmapDescriptorFactory.defaultMarker()).anchor(AnchorX, AnchorY).position(position);
 
         return marker;
     }
