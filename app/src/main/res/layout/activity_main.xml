@@ -7,14 +7,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="City Selection"
-        android:id="@+id/tvLabel"
+        android:id="@+id/tvCityLabel"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"/>
+        />
 
     <Spinner
         android:layout_width="250dp"
@@ -22,41 +22,43 @@
         android:id="@+id/spSubreddits"
         android:clickable="false"
         android:spinnerMode="dropdown"
-        android:layout_below="@+id/tvLabel"
-        android:layout_alignParentStart="true"/>
+        android:layout_below="@+id/tvCityLabel"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="5dp"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="View Selection"
-        android:id="@+id/tvLabel2"
+        android:id="@+id/tvViewLabel"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="75dp"
         android:layout_below="@+id/spSubreddits"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:gravity="center"/>
 
     <Button
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="View List"
         android:id="@+id/btnList"
         android:layout_below="@+id/btnMap"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="5dp"/>
 
     <Button
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="View Map"
         android:id="@+id/btnMap"
-        android:layout_below="@+id/tvLabel2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_below="@+id/cbRefresh"
+        android:layout_alignStart="@+id/btnList"
+        android:layout_marginTop="5dp"/>
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="Manage Cities"
         android:id="@+id/btnManage"
         android:layout_alignBottom="@+id/spSubreddits"
@@ -64,12 +66,32 @@
 
     <Button
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="View Population"
+        android:layout_height="50dp"
+        android:text="Compare Population"
         android:id="@+id/btnPopulation"
-        android:layout_below="@+id/btnList"
+        android:layout_below="@+id/tvPopulationLabel"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="5dp"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Force Refresh On Next View"
+        android:id="@+id/cbRefresh"
+        android:checked="false"
+        android:layout_below="@+id/tvViewLabel"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Population Graph"
+        android:id="@+id/tvPopulationLabel"
+        android:layout_below="@+id/btnList"
+        android:gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="75dp"/>
 
 
 </RelativeLayout>

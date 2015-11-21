@@ -1,12 +1,14 @@
 package muccw.euanmcmen.landmarksapp;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -15,10 +17,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -35,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btnList;
     Button btnMap;
     Button btnManage;
-    Spinner spinner;
+    Spinner spCities;
+    CheckBox cbRefresh;
 
     //Create the landmark list.
     ArrayList<Landmark> landmarks = null;
@@ -44,16 +46,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseManager manager = null;
 
     //Update flag.
+    //This is changed within the update method.
     boolean shouldUpdate = true;
 
-    //Flag to determine whether the app will display a list screen or map screen.
-    boolean displayAsList;
+    //Flag to determine if the list view or map view is displayed depending on which button the user pressed.
+    //Needs to be public scope to allow the async thread to access it, plus it's used in multiple methods.
+    boolean displayAsList = true;
 
     //This holds the city retrieved from the database.
-    CityInfo city;
+    //This city is used for the parsing url and gps coords.
+    CityInfo city = null;
 
-    //The about dialog.
-    FragmentManager dlgAbout;
+    //Shared preferences.
+    SharedPreferences sharedPrefs = null;
+
+    //Default selection for the spinner.
+    //This also represents the user's "preference".
+    int spinnerDefaultPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-
-        //Set up the about dialog.
-        dlgAbout = this.getFragmentManager();
 
         //Set up the database manager to read the city information from.
         manager = new DatabaseManager(this, "CourseworkDB.s3db", null, 1);
@@ -76,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
 
+        //Set the saved preferences stuff
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         //Set up the buttons.
         btnList = (Button) findViewById(R.id.btnList);
         btnList.setOnClickListener(this);
@@ -84,17 +93,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnManage = (Button) findViewById(R.id.btnManage);
         btnManage.setOnClickListener(this);
 
-        //Set up cities array with database manager class.
-        String[] citiesArray = manager.getCities();
+        //Set up the check box.
+        cbRefresh = (CheckBox) findViewById(R.id.cbRefresh);
 
-        //Set up the array adapter to use the cities string array.
-        spinner = (Spinner) findViewById(R.id.spSubreddits);
-        ArrayAdapter<String> spAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, citiesArray);
+        //Set up the spinner.
+        spCities = (Spinner) findViewById(R.id.spSubreddits);
+
+        //Set up cities array with database manager class.
+        //Set as final so it may be used in the setOnItemSelectedListener inner method.
+        final String[] citiesArray = manager.getCities();
+
+        //Set up the spinner adapter to use the cities string array.
+        ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, citiesArray);
         spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spAdapter);
+        spCities.setAdapter(spAdapter);
+
+        //Set up the spinner's default selection using value from playerprefs.
+        spinnerDefaultPos = sharedPrefs.getInt("spinnerVal", 0);
+        spCities.setSelection(spinnerDefaultPos);
 
         //Set up the spinner item changed listener.
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        spCities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
@@ -102,12 +121,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //When the spinner value changes, set the update flag to true.
                 //This way, the application will parse the new city.
                 shouldUpdate = true;
+
+                //Set the player preferences with the spinner value.
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putInt("spinnerVal", position);
+                editor.putString("city", citiesArray[position]);
+                editor.apply();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView)
             {
-                return;
+
             }
 
         });
@@ -124,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onResume()
     {
+        //Uncheck the checkbox in case the user unintentionally leaves this checked and reloads.
+        cbRefresh.setChecked(false);
+
         super.onResume();
     }
 
@@ -139,14 +167,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (id)
         {
             case R.id.About:
-                DialogFragment aboutDialog = new AboutDialog();
-                aboutDialog.show(getFragmentManager(), "About_Dialog");
+                //Show the about dialog.
+                AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to change cities, and display landmarks " +
+                        "of that city on a map or list.", "About", true);
                 return true;
             case R.id.Preferences:
-                //Display the playerprefs screen.
-                //Later, changing the spinner will change the "preferred city" of the user.
+                //Show the user preferences dialog.
+                AboutDialogFactory.ShowAlertDialog(this, "Preferred City: " + sharedPrefs.getString("city", "None."), "Preferences", false);
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -155,73 +183,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-        //Update the landmarks list if shouldUpdate is true.
-        //Updating the list also calls openViewScreen which displays the new intent.
-        //If we don't need to update the list, simply display the new intent with OVS call.
-        //Change displayAsList flag depending on what the user pressed.
-
         if (v.getId() == btnList.getId())
         {
-            //Set the displayAsList value to true.  We want the list.
-            displayAsList = true;
-
-            if (shouldUpdate)
-            {
-                updateData();
-            }
-            else
-            {
-                openViewScreen();
-            }
+            //Launch map screen by setting displayAsList parameter to true.
+            HandleUpdateAndDisplay(true);
         }
 
         if (v.getId() == btnMap.getId())
         {
-            //Set the displayAsList value to false, as we want to display as map.
-            displayAsList = false;
+            //Launch map screen by setting displayAsList parameter to false.
+            HandleUpdateAndDisplay(false);
+        }
+    }
 
-            if (shouldUpdate)
-            {
-                updateData();
-            }
-            else
-            {
-                openViewScreen();
-            }
+    private void HandleUpdateAndDisplay(boolean setDisplayAsList)
+    {
+        //This method "wraps" the update and display methods.
+
+        //Set the displayAsList value to the passed setDisplayAsList value.
+        displayAsList = setDisplayAsList;
+
+        //If the program should update, or the refresh button is checked, update then open a view screen.
+        //The view screen will be opened after the update process in the async method's postexecute method.
+        //Otherwise, just open a view screen.
+        if (shouldUpdate || cbRefresh.isChecked())
+        {
+            updateData();
+        }
+        else
+        {
+            openViewScreen();
         }
     }
 
     public void updateData()
     {
-        Log.d("Main.update", "Running update method.");
-        //The parser classes would also be called here.
-        //This screen should also not "repeat" the parsing when the user navigates back.
-        //Updating the screen should be done by the update button in the menu.
-        //      Pressing that button takes the user back to this screen and calls this method.
-        //      User prefs could be used to hold the value for the update flag, but not reveal it to the user.
-
-
         //Show a friendly toast to show what's happening.
         Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
 
         //Initialise the landmarks list
-        landmarks = new ArrayList<Landmark>();
+        landmarks = new ArrayList<>();
 
-        //Retrieve city URL from database depending on selected value in the spinner.
-        //This can also be used to set the population canvas thing, and the latlang of the city for the map.
-        city = manager.getCity(spinner.getSelectedItem().toString());
+        //Retrieve city from database.
+        //This city object will be used for the URL and the coords for the map intent.
+        city = manager.getCity(spCities.getSelectedItem().toString());
 
         //Run the updater
         new Updater().execute(city.getUrl());
 
-        //Set the update flag to false.
+        //Set the update flag to false to avoid unnecessary updating.
         shouldUpdate = false;
     }
 
     public void openViewScreen()
     {
         //Create the intent with a null value.
-        Intent newIntent = null;
+        Intent newIntent;
 
         //Decide which intent to use by checking the radio buttons.
         if (displayAsList)
@@ -251,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try
             {
                 Log.d("Main.Updater.Backgrnd.", "In the background method.");
-                //Get the descriptions of each landmark on the subreddit.
+                //Get the descriptions of each landmark on the datasource.
                 String result = HTTPFeedReader.ReadXMLFeed(Params[0]);
 
                 Log.d("Main.Updater.Backgrnd.", "Result string:\r\n" + result);
@@ -264,23 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     landmarks = parser.CreateCollection();
                 }
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-            catch (ExecutionException e)
-            {
-                e.printStackTrace();
-            }
-            catch (XmlPullParserException e)
-            {
-                e.printStackTrace();
-            }
-            catch (NullPointerException e)
+            catch (InterruptedException | ExecutionException | XmlPullParserException | NullPointerException | IOException e)
             {
                 e.printStackTrace();
             }
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Show another friendly toast.
             Toast.makeText(getApplicationContext(), "Complete!", Toast.LENGTH_SHORT).show();
 
-            //Start new intent.
+            //Open the view screen after the updater has completed the background process.
             openViewScreen();
         }
     }

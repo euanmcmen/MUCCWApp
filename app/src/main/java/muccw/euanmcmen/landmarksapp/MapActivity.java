@@ -3,9 +3,11 @@ package muccw.euanmcmen.landmarksapp;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -35,12 +37,18 @@ public class MapActivity extends AppCompatActivity
     //The map.
     GoogleMap map;
 
+    //Shared preferences.
+    SharedPreferences sharedPrefs = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.map_screen);
+
+        //Set the saved preferences stuff
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         //Get the intent to retrieve the landmark arraylist
         Intent intent = getIntent();
@@ -122,14 +130,13 @@ public class MapActivity extends AppCompatActivity
         switch (id)
         {
             case R.id.About:
-                DialogFragment aboutDialog = new AboutDialog();
-                aboutDialog.show(getFragmentManager(), "About_Dialog");
+                //Show the about dialog.
+                AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays them as a map.", "About", true);
                 return true;
             case R.id.Preferences:
-                //Display the playerprefs screen.
-                //Later, changing the spinner will change the "preferred city" of the user.
+                //Show the user preferences dialog.
+                AboutDialogFactory.ShowAlertDialog(this, "Preferred City: " + sharedPrefs.getString("city", "None."), "Preferences", false);
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
