@@ -36,8 +36,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     //Views
-    Button btnList;
-    Button btnMap;
+    Button btnDisplay;
     Button btnManage;
     Button btnPopulation;
     Spinner spCities;
@@ -56,9 +55,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //This is changed within the update method.
     boolean shouldUpdate = true;
 
-    //Flag to determine if the list view or map view is displayed depending on which button the user pressed.
-    //Needs to be public scope to allow the async thread to access it, plus it's used in multiple methods.
-    boolean displayAsList = true;
+    //Integer to hold the child id for the view switcher.
+    //Changed through the player prefs.
+    //0 is list, 1 is map.
+    int initialDisplay = 0;
 
     //This holds the city retrieved from the database.
     //This city is used for the parsing url and gps coords.
@@ -93,12 +93,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         //Set up the buttons.
-        btnList = (Button) findViewById(R.id.btnList);
-        btnList.setOnClickListener(this);
-        btnMap = (Button) findViewById(R.id.btnMap);
-        btnMap.setOnClickListener(this);
         btnManage = (Button) findViewById(R.id.btnManage);
         btnManage.setOnClickListener(this);
+        btnDisplay = (Button) findViewById(R.id.btnDisplay);
+        btnDisplay.setOnClickListener(this);
         btnPopulation = (Button) findViewById(R.id.btnPopulation);
         btnPopulation.setOnClickListener(this);
 
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Set the player preferences with the spinner value.
                 SharedPreferences.Editor editor = sharedPrefs.edit();
                 editor.putInt("spinnerVal", position);
-                editor.putString("city", cities[position]);
+                editor.putString("prefCity", cities[position]);
                 editor.apply();
             }
 
@@ -144,6 +142,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+
+        //Set the initial display
+        initialDisplay = sharedPrefs.getInt("initial", -1);
     }
 
     @Override
@@ -159,6 +160,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         //Uncheck the checkbox in case the user unintentionally leaves this checked and reloads.
         cbRefresh.setChecked(false);
+
+        //Update the initial display value
+        initialDisplay = sharedPrefs.getInt("initial", -1);
 
         super.onResume();
     }
@@ -180,7 +184,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.
-                AboutDialogFactory.ShowAlertDialog(this, "Preferred City: " + sharedPrefs.getString("city", "None."), "Preferences", false);
+                AboutDialogFactory.ShowAlertDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
+                        sharedPrefs.getString("prefScreen", "Invalid"), "Preferences", false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -190,16 +195,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-        if (v.getId() == btnList.getId())
+        if (v.getId() == btnDisplay.getId())
         {
-            //Launch map screen by setting displayAsList parameter to true.
-            HandleUpdateAndDisplay(true);
-        }
-
-        if (v.getId() == btnMap.getId())
-        {
-            //Launch map screen by setting displayAsList parameter to false.
-            HandleUpdateAndDisplay(false);
+            if (shouldUpdate || cbRefresh.isChecked())
+            {
+                //If the program should update, or the refresh button is checked, update then open a view screen.
+                //The view screen will be opened after the update process in the async method's postexecute method.
+                updateData();
+            }
+            else
+            {
+                //Otherwise, just open the display screen.
+                openDisplayScreen();
+            }
         }
 
         if (v.getId() == btnPopulation.getId())
@@ -233,25 +241,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
-    //Wrapper method for launching the displays.
-    private void HandleUpdateAndDisplay(boolean setDisplayAsList)
-    {
-        //Set the displayAsList value to the passed setDisplayAsList value.
-        displayAsList = setDisplayAsList;
-
-        if (shouldUpdate || cbRefresh.isChecked())
-        {
-            //If the program should update, or the refresh button is checked, update then open a view screen.
-            //The view screen will be opened after the update process in the async method's postexecute method.
-            updateData();
-        }
-        else
-        {
-            //Otherwise, just open a view screen.
-            openViewScreen();
-        }
-    }
-
     //This method handles the execution of the updater.
     public void updateData()
     {
@@ -272,27 +261,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shouldUpdate = false;
     }
 
-    //This method handles the launching of a display intent.
-    public void openViewScreen()
+    public void openDisplayScreen()
     {
-        //Create bundle with landmarks.
+        //Create bundle and place information on.
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("list", landmarks);
+        bundle.putParcelable("coords", city.getCoordinates());
+        bundle.putInt("initial", initialDisplay);
 
-        //Decide which intent to use by checking the radio buttons.
-        if (displayAsList)
-        {
-            //Pass the bundle and class into the intent open method.
-            OpenIntent(ListActivity.class, bundle);
-        }
-        else
-        {
-            //Place the city coords in the bundle.
-            bundle.putParcelable("coords", city.getCoordinates());
-
-            //Pass the bundle and class into the intent open method.
-            OpenIntent(MapActivity.class, bundle);
-        }
+        //Pass the bundle and class into the intent open method.
+        OpenIntent(LandmarkDisplayActivity.class, bundle);
     }
 
     class Updater extends AsyncTask<String, Void, Void>
@@ -327,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(getApplicationContext(), "Complete!", Toast.LENGTH_SHORT).show();
 
             //Open the view screen after the updater has completed the background process.
-            openViewScreen();
+            openDisplayScreen();
         }
     }
 }

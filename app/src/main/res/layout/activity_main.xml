@@ -33,28 +33,10 @@
         android:text="View Selection"
         android:id="@+id/tvViewLabel"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="100dp"
         android:layout_below="@+id/spSubreddits"
         android:layout_centerHorizontal="true"
         android:gravity="center"/>
-
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:text="View List"
-        android:id="@+id/btnList"
-        android:layout_below="@+id/btnMap"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"/>
-
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:text="View Map"
-        android:id="@+id/btnMap"
-        android:layout_below="@+id/cbRefresh"
-        android:layout_alignStart="@+id/btnList"
-        android:layout_marginTop="5dp"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -88,10 +70,18 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Population Graph"
         android:id="@+id/tvPopulationLabel"
-        android:layout_below="@+id/btnList"
         android:gravity="center"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="75dp"/>
+        android:layout_marginTop="100dp"
+        android:layout_below="@+id/btnDisplay"/>
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="View Landmarks"
+        android:id="@+id/btnDisplay"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/cbRefresh"/>
 
 
 </RelativeLayout>
