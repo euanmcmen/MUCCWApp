@@ -1,6 +1,7 @@
 package muccw.euanmcmen.landmarksapp;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.DialogInterface;
 import android.content.Intent;
 
@@ -24,7 +25,9 @@ import android.widget.Toast;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 //Euan McMenemin
@@ -36,11 +39,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btnList;
     Button btnMap;
     Button btnManage;
+    Button btnPopulation;
     Spinner spCities;
     CheckBox cbRefresh;
 
     //Create the landmark list.
     ArrayList<Landmark> landmarks = null;
+
+    //Create the cities array
+    String[] cities = null;
 
     //Create the database manager object.
     DatabaseManager manager = null;
@@ -92,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnMap.setOnClickListener(this);
         btnManage = (Button) findViewById(R.id.btnManage);
         btnManage.setOnClickListener(this);
+        btnPopulation = (Button) findViewById(R.id.btnPopulation);
+        btnPopulation.setOnClickListener(this);
 
         //Set up the check box.
         cbRefresh = (CheckBox) findViewById(R.id.cbRefresh);
@@ -101,10 +110,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Set up cities array with database manager class.
         //Set as final so it may be used in the setOnItemSelectedListener inner method.
-        final String[] citiesArray = manager.getCities();
+        cities = manager.getCities();
 
         //Set up the spinner adapter to use the cities string array.
-        ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, citiesArray);
+        ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, cities);
         spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCities.setAdapter(spAdapter);
 
@@ -125,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Set the player preferences with the spinner value.
                 SharedPreferences.Editor editor = sharedPrefs.edit();
                 editor.putInt("spinnerVal", position);
-                editor.putString("city", citiesArray[position]);
+                editor.putString("city", cities[position]);
                 editor.apply();
             }
 
@@ -134,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             {
 
             }
-
         });
     }
 
@@ -162,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
 
         switch (id)
         {
@@ -194,28 +201,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Launch map screen by setting displayAsList parameter to false.
             HandleUpdateAndDisplay(false);
         }
+
+        if (v.getId() == btnPopulation.getId())
+        {
+            //Create an array of integers.
+            int[] populations;
+
+            //Retrieve the populations from each city through the Database manager object.
+            populations = manager.getPopulations();
+
+            //Create a bundle and load the array on.
+            Bundle bundle = new Bundle();
+            bundle.putIntArray("populations", populations);
+            bundle.putStringArray("cities", cities);
+
+            //Create a new intent for the population screen, and load the bundle on.
+            OpenIntent(PopulationGraphActivity.class, bundle);
+        }
     }
 
+    //Wrapper method for intent handling.
+    private void OpenIntent(Class intentClass, Bundle bundle)
+    {
+        //Create the intent.
+        Intent intent = new Intent(getApplicationContext(), intentClass);
+
+        //Put each bundle in the intent.
+        intent.putExtras(bundle);
+
+        //Start intent.
+        startActivity(intent);
+    }
+
+    //Wrapper method for launching the displays.
     private void HandleUpdateAndDisplay(boolean setDisplayAsList)
     {
-        //This method "wraps" the update and display methods.
-
         //Set the displayAsList value to the passed setDisplayAsList value.
         displayAsList = setDisplayAsList;
 
-        //If the program should update, or the refresh button is checked, update then open a view screen.
-        //The view screen will be opened after the update process in the async method's postexecute method.
-        //Otherwise, just open a view screen.
         if (shouldUpdate || cbRefresh.isChecked())
         {
+            //If the program should update, or the refresh button is checked, update then open a view screen.
+            //The view screen will be opened after the update process in the async method's postexecute method.
             updateData();
         }
         else
         {
+            //Otherwise, just open a view screen.
             openViewScreen();
         }
     }
 
+    //This method handles the execution of the updater.
     public void updateData()
     {
         //Show a friendly toast to show what's happening.
@@ -235,29 +272,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shouldUpdate = false;
     }
 
+    //This method handles the launching of a display intent.
     public void openViewScreen()
     {
-        //Create the intent with a null value.
-        Intent newIntent;
+        //Create bundle with landmarks.
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("list", landmarks);
 
         //Decide which intent to use by checking the radio buttons.
         if (displayAsList)
         {
-            //Open the list view screen.
-            newIntent = new Intent(getApplicationContext(), ListActivity.class);
+            //Pass the bundle and class into the intent open method.
+            OpenIntent(ListActivity.class, bundle);
         }
         else
         {
-            //Open the map view screen.
-            newIntent = new Intent(getApplicationContext(), MapActivity.class);
-            newIntent.putExtra("coords", city.getCoordinates());
+            //Place the city coords in the bundle.
+            bundle.putParcelable("coords", city.getCoordinates());
+
+            //Pass the bundle and class into the intent open method.
+            OpenIntent(MapActivity.class, bundle);
         }
-
-        //Load the list onto the intent.
-        newIntent.putParcelableArrayListExtra("list", landmarks);
-
-        //Launch the intent.
-        startActivity(newIntent);
     }
 
     class Updater extends AsyncTask<String, Void, Void>
@@ -267,11 +302,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             try
             {
-                Log.d("Main.Updater.Backgrnd.", "In the background method.");
                 //Get the descriptions of each landmark on the datasource.
                 String result = HTTPFeedReader.ReadXMLFeed(Params[0]);
-
-                Log.d("Main.Updater.Backgrnd.", "Result string:\r\n" + result);
 
                 //If the result string isn't null, do some stuff with it.  It shouldn't be null.
                 if (!result.equals(""))

@@ -38,6 +38,11 @@
             android:label="Map" >
         </activity>
 
+        <activity
+            android:name=".PopulationGraphActivity"
+            android:label="Population Graph" >
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

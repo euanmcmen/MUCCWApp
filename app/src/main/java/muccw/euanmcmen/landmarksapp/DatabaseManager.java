@@ -168,6 +168,30 @@ public class DatabaseManager extends SQLiteOpenHelper
         db.close();
     }
 
+    public boolean removeCity(String cityName)
+    {
+        boolean result = false;
+
+        String query = "SELECT * FROM " + TBL_SUBREDDITS + " WHERE " + COL_CITY + " =  \"" + cityName + "\"";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        CityInfo city = new CityInfo();
+
+        if (cursor.moveToFirst())
+        {
+            city.setCity(cursor.getString(0));
+            db.delete(TBL_SUBREDDITS, COL_CITY + " = ?",
+                    new String[] { city.getCity() });
+            cursor.close();
+            result = true;
+        }
+        db.close();
+        return result;
+    }
+
     public CityInfo getCity(String cityName)
     {
         String query = "SELECT * FROM " + TBL_SUBREDDITS + " WHERE " + COL_CITY + " =  \"" + cityName + "\"";
@@ -245,27 +269,38 @@ public class DatabaseManager extends SQLiteOpenHelper
         return rowCount;
     }
 
-    public boolean removeCity(String cityName)
+    public int[] getPopulations()
     {
-        boolean result = false;
+        //Select all cities from the subreddits table.
+        String query = "SELECT " + COL_POPULATION + " FROM " + TBL_SUBREDDITS;
 
-        String query = "SELECT * FROM " + TBL_SUBREDDITS + " WHERE " + COL_CITY + " =  \"" + cityName + "\"";
-
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
 
-        CityInfo city = new CityInfo();
+        //Initialise result int array with row count.
+        int[] result = new int[cursor.getCount()];
 
         if (cursor.moveToFirst())
         {
-            city.setCity(cursor.getString(0));
-            db.delete(TBL_SUBREDDITS, COL_CITY + " = ?",
-                    new String[] { city.getCity() });
+            //Read the first position.
+            cursor.moveToFirst();
+
+            //Iterate over the other rows in the database.
+            for (int i = 0; i < cursor.getCount(); i++)
+            {
+                cursor.moveToPosition(i);
+                result[i] = Integer.parseInt(cursor.getString(0));
+            }
             cursor.close();
-            result = true;
         }
+        else
+        {
+            result = null;
+        }
+
         db.close();
         return result;
     }
+
 }

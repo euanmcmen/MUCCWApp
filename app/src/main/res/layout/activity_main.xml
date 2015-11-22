@@ -58,7 +58,7 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:text="Manage Cities"
         android:id="@+id/btnManage"
         android:layout_alignBottom="@+id/spSubreddits"
