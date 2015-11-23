@@ -96,7 +96,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         }
 
         //Set the initial view.
-        Log.d("LDA.onCreate", "LOADING: " + initialDisplay);
+        //Log.d("LDA.onCreate", "LOADING: " + initialDisplay);
         switcher.setDisplayedChild(initialDisplay);
     }
 

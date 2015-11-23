@@ -2,9 +2,7 @@ package muccw.euanmcmen.landmarksapp;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -12,11 +10,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 
 //Euan McMenemin
@@ -38,7 +33,7 @@ public class XMLParser
 	public ArrayList<Landmark> CreateCollection() throws XmlPullParserException, IOException, ExecutionException, InterruptedException, NullPointerException
 	{		
 		//Initialise collection
-		ArrayList<Landmark> landmarks = new ArrayList<Landmark>();
+		ArrayList<Landmark> landmarks = new ArrayList<>();
 
 		//Set up factory and parser
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -52,7 +47,7 @@ public class XMLParser
 		String tagContent = "";
 
 		//Set up field for tag name.
-		String tagName = xpp.getName();
+		String tagName;
 
 		//Read to the end of the document.
 		int eventType = xpp.getEventType();
@@ -87,7 +82,10 @@ public class XMLParser
 				//If the tag is an end tag.
 				case XmlPullParser.END_TAG:
 				{
-					//If statements as Strings can't be enumarated/"switched".
+					//These code blocks depend on a landmark object being created in the start tag block.
+					//This assertion statement simple allows that assumption.
+					assert landmark != null;
+
 					if (tagName.equals("ItemTitle"))
 					{
 						//Write the title.

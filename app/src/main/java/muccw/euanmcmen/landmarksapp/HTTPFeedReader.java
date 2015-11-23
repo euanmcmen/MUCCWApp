@@ -19,46 +19,32 @@ public class HTTPFeedReader
 	public static String ReadXMLFeed(String urlString) throws IOException
 	{
 	 	String result = "";
-    	InputStream inStream = null;
-    	int response = -1;
-    	
-    	//Try was moved to encapsulate the url initialisation and throw block. 
-    	//Also the HTTPUrlConnection line is simpler.
-    	try
-    	{	    	
-    		// Open connection
-			URL url = new URL(urlString);   		
-    		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-    		httpCon.setInstanceFollowRedirects(true);
-    		httpCon.setRequestMethod("GET");
-    		httpCon.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-    		httpCon.connect();   		
-    		response = httpCon.getResponseCode();
+    	InputStream inStream;
+    	int response;
 
-    		// Check that connection is Ok
-    		if (response == HttpURLConnection.HTTP_OK)
-    		{
-    			// Connection is Ok so open a reader 
-    			inStream = httpCon.getInputStream();
-    			InputStreamReader inStreamReader= new InputStreamReader(inStream);
-    			BufferedReader inReader= new BufferedReader(inStreamReader);
-    			
-    			// Read in the data from the XML stream
-    			String line = new String();
-    			while (( (line = inReader.readLine())) != null)
-				{
-					//The program seems to treat the entire xml feed as a single line.
-					result = result + "\n" + line;
-    			}
-    		}
-    		
-    		//Close the connection after the read.
-    		httpCon.disconnect();
-    	}
-    	catch (IOException ioe)
-    	{
-    		throw ioe;    		
-    	}
+		URL url = new URL(urlString);
+		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+		httpCon.setInstanceFollowRedirects(true);
+		httpCon.setRequestMethod("GET");
+		httpCon.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+		httpCon.connect();
+		response = httpCon.getResponseCode();
+		if (response == HttpURLConnection.HTTP_OK)
+        {
+            // Connection is Ok so open a reader
+            inStream = httpCon.getInputStream();
+            InputStreamReader inStreamReader= new InputStreamReader(inStream);
+            BufferedReader inReader= new BufferedReader(inStreamReader);
+
+            // Read in the data from the XML stream
+            String line;
+            while (( (line = inReader.readLine())) != null)
+            {
+                //The program seems to treat the entire xml feed as a single line.
+                result = result + "\n" + line;
+            }
+        }
+		httpCon.disconnect();
 
 		//Perform some operations on the result string.
 		//A lot of these replacements are attributed to the "plaintext" XML that we read from

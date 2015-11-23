@@ -26,16 +26,6 @@ public class Landmark implements Parcelable
         longitude = 0.0;
     }
 
-    public Landmark(String title, String desc, Bitmap img, double lat, double lon)
-    {
-        //Set fields
-        titleText = title;
-        descriptionText = desc;
-        image = img;
-        latitude = lat;
-        longitude = lon;
-    }
-
     public Landmark(Parcel in)
     {
         titleText = in.readString();
@@ -75,19 +65,9 @@ public class Landmark implements Parcelable
         this.image = image;
     }
 
-    public double getLatitude()
-    {
-        return latitude;
-    }
-
     public void setLatitude(double latitude)
     {
         this.latitude = latitude;
-    }
-
-    public double getLongitude()
-    {
-        return longitude;
     }
 
     public void setLongitude(double longitude)

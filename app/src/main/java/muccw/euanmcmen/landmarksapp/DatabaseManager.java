@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.io.FileOutputStream;
@@ -124,8 +125,8 @@ public class DatabaseManager extends SQLiteOpenHelper
     // ============================================================================================
     private void copyDBFromAssets() throws IOException
     {
-        InputStream dbInput = null;
-        OutputStream dbOutput = null;
+        InputStream dbInput;
+        OutputStream dbOutput;
         String dbFileName = DB_PATH + DB_NAME;
 
         try {
@@ -220,17 +221,37 @@ public class DatabaseManager extends SQLiteOpenHelper
         return result;
     }
 
-    public String[] getCities()
+//    public int getCityCount()
+//    {
+//        //Select all cities from the subreddits table.
+//        String query = "SELECT " + COL_CITY + " FROM " + TBL_SUBREDDITS;
+//
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        Cursor cursor = db.rawQuery(query, null);
+//        int rowCount = cursor.getCount();
+//        cursor.close();
+//
+//        //Return the row count.
+//        return rowCount;
+//    }
+
+    public Bundle getGraphData()
     {
         //Select all cities from the subreddits table.
-        String query = "SELECT " + COL_CITY + " FROM " + TBL_SUBREDDITS;
+        String query = "SELECT " + COL_CITY + "," + COL_POPULATION + " FROM " + TBL_SUBREDDITS;
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
 
         //Initialise result string array with row count.
-        String[] result = new String[cursor.getCount()];
+        Bundle result = new Bundle();
+
+        //Initialise array for each row.
+        int capacity = cursor.getCount();
+        String[] cities = new String[capacity];
+        int[] populations = new int[capacity];
 
         if (cursor.moveToFirst())
         {
@@ -241,66 +262,24 @@ public class DatabaseManager extends SQLiteOpenHelper
             for (int i = 0; i < cursor.getCount(); i++)
             {
                 cursor.moveToPosition(i);
-                result[i] = cursor.getString(0);
+
+                //Fill all arrays with table data.
+                cities[i] = cursor.getString(0);
+                populations[i] = Integer.parseInt(cursor.getString(1));
             }
             cursor.close();
         }
         else
         {
-            result = null;
+            cities = null;
+            populations = null;
         }
+
+        //Add the arrays to the bundle.
+        result.putStringArray("cities", cities);
+        result.putIntArray("populations", populations);
 
         db.close();
         return result;
     }
-
-    public int getCityCount()
-    {
-        //Select all cities from the subreddits table.
-        String query = "SELECT " + COL_CITY + " FROM " + TBL_SUBREDDITS;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(query, null);
-        int rowCount = cursor.getCount();
-        cursor.close();
-
-        //Return the row count.
-        return rowCount;
-    }
-
-    public int[] getPopulations()
-    {
-        //Select all cities from the subreddits table.
-        String query = "SELECT " + COL_POPULATION + " FROM " + TBL_SUBREDDITS;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(query, null);
-
-        //Initialise result int array with row count.
-        int[] result = new int[cursor.getCount()];
-
-        if (cursor.moveToFirst())
-        {
-            //Read the first position.
-            cursor.moveToFirst();
-
-            //Iterate over the other rows in the database.
-            for (int i = 0; i < cursor.getCount(); i++)
-            {
-                cursor.moveToPosition(i);
-                result[i] = Integer.parseInt(cursor.getString(0));
-            }
-            cursor.close();
-        }
-        else
-        {
-            result = null;
-        }
-
-        db.close();
-        return result;
-    }
-
 }

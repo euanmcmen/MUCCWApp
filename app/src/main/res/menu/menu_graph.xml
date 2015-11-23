@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      tools:context=".MainActivity">
+
+      <item android:id="@+id/About"
+            android:title="About"
+            android:icon="@drawable/ic_action_about"
+            android:orderInCategory="1"
+            app:showAsAction="always"/>
+
+</menu>

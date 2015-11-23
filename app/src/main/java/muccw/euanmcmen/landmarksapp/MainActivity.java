@@ -1,8 +1,5 @@
 package muccw.euanmcmen.landmarksapp;
 
-import android.app.AlertDialog;
-import android.app.Application;
-import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
@@ -11,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,9 +21,7 @@ import android.widget.Toast;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 //Euan McMenemin
@@ -48,8 +42,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Create the cities array
     String[] cities = null;
 
-    //Create the database manager object.
+    //Create the database manager object
     DatabaseManager manager = null;
+
+    //Create array bundle object.
+    //This holds the arrays from the manager, and is passed into the graph screen.
+    Bundle arrayBundle = null;
 
     //Update flag.
     //This is changed within the update method.
@@ -89,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
 
+        //Get arrayBundle from manager class.
+        arrayBundle = manager.getGraphData();
+
         //Set the saved preferences stuff
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -106,9 +107,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Set up the spinner.
         spCities = (Spinner) findViewById(R.id.spSubreddits);
 
-        //Set up cities array with database manager class.
-        //Set as final so it may be used in the setOnItemSelectedListener inner method.
-        cities = manager.getCities();
+        //Use arraybundle to fill cities array.
+        cities = arrayBundle.getStringArray("cities");
 
         //Set up the spinner adapter to use the cities string array.
         ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, cities);
@@ -212,19 +212,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (v.getId() == btnPopulation.getId())
         {
-            //Create an array of integers.
-            int[] populations;
-
-            //Retrieve the populations from each city through the Database manager object.
-            populations = manager.getPopulations();
-
-            //Create a bundle and load the array on.
-            Bundle bundle = new Bundle();
-            bundle.putIntArray("populations", populations);
-            bundle.putStringArray("cities", cities);
-
-            //Create a new intent for the population screen, and load the bundle on.
-            OpenIntent(PopulationGraphActivity.class, bundle);
+            //Create a new intent for the population screen, and load the array bundle on.
+            OpenIntent(PopulationGraphActivity.class, arrayBundle);
         }
     }
 
