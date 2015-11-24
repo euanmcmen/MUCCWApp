@@ -1,19 +1,14 @@
 package muccw.euanmcmen.landmarksapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,7 +61,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         initialDisplay = intent.getIntExtra("initial",-1);
 
         //Set up the list view with custom adapter and layout.
-        LandmarkAdapter adapter = new LandmarkAdapter(this, R.layout.custom_list_item, landmarksList);
+        LandmarkAdapter adapter = new LandmarkAdapter(this, R.layout.display_list_item, landmarksList);
         listLandmarks.setAdapter(adapter);
 
         //Fill the map with markers.
@@ -185,7 +180,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
             case R.id.About:
                 //Show the about dialog.
                 AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays the landmarks.\r\n" +
-                        "Use the Cycle button on the menu to swap displays.", "About", true);
+                        "Use the Cycle button on the menu to swap displays.", "About");
                 return true;
             case R.id.Switch:
                 //Switch views.

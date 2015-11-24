@@ -17,12 +17,11 @@ import java.lang.Error;
 import java.lang.Integer;
 import java.lang.Override;
 import java.lang.String;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class DatabaseManager extends SQLiteOpenHelper
 {
-
     private static final int DB_VER = 1;
     private static final String DB_PATH = "/data/data/muccw.euanmcmen.landmarksapp/databases/";
     private static final String DB_NAME = "CourseworkDB.s3db";
@@ -221,21 +220,6 @@ public class DatabaseManager extends SQLiteOpenHelper
         return result;
     }
 
-//    public int getCityCount()
-//    {
-//        //Select all cities from the subreddits table.
-//        String query = "SELECT " + COL_CITY + " FROM " + TBL_SUBREDDITS;
-//
-//        SQLiteDatabase db = this.getReadableDatabase();
-//
-//        Cursor cursor = db.rawQuery(query, null);
-//        int rowCount = cursor.getCount();
-//        cursor.close();
-//
-//        //Return the row count.
-//        return rowCount;
-//    }
-
     public Bundle getGraphData()
     {
         //Select all cities from the subreddits table.
@@ -248,10 +232,9 @@ public class DatabaseManager extends SQLiteOpenHelper
         //Initialise result string array with row count.
         Bundle result = new Bundle();
 
-        //Initialise array for each row.
-        int capacity = cursor.getCount();
-        String[] cities = new String[capacity];
-        int[] populations = new int[capacity];
+        //initialise arraylists for each row.
+        ArrayList<String> cities = new ArrayList<>();
+        ArrayList<Integer> populations = new ArrayList<>();
 
         if (cursor.moveToFirst())
         {
@@ -262,10 +245,8 @@ public class DatabaseManager extends SQLiteOpenHelper
             for (int i = 0; i < cursor.getCount(); i++)
             {
                 cursor.moveToPosition(i);
-
-                //Fill all arrays with table data.
-                cities[i] = cursor.getString(0);
-                populations[i] = Integer.parseInt(cursor.getString(1));
+                cities.add(cursor.getString(0));
+                populations.add(Integer.parseInt(cursor.getString(1)));
             }
             cursor.close();
         }
@@ -275,9 +256,8 @@ public class DatabaseManager extends SQLiteOpenHelper
             populations = null;
         }
 
-        //Add the arrays to the bundle.
-        result.putStringArray("cities", cities);
-        result.putIntArray("populations", populations);
+        result.putStringArrayList("cities", cities);
+        result.putIntegerArrayList("populations", populations);
 
         db.close();
         return result;

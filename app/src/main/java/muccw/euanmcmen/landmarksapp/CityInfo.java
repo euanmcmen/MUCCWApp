@@ -15,6 +15,17 @@ public class CityInfo implements Serializable
     private double latitude;
     private double longitude;
 
+    public CityInfo(String city, String url, int population, double latitude, double longitude)
+    {
+        this.city = city;
+        this.url = url;
+        this.population = population;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public CityInfo() { }
+
     public String getCity()
     {
         return city;

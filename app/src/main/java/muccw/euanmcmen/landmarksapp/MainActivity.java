@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Landmark> landmarks = null;
 
     //Create the cities array
-    String[] cities = null;
+    ArrayList<String> cities = null;
 
     //Create the database manager object
     DatabaseManager manager = null;
@@ -51,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Update flag.
     //This is changed within the update method.
-    boolean shouldUpdate = true;
+    boolean shouldUpdateData = true;
+    boolean shouldUpdateCities = true;
 
     //Integer to hold the child id for the view switcher.
     //Changed through the player prefs.
@@ -87,9 +89,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
 
-        //Get arrayBundle from manager class.
-        arrayBundle = manager.getGraphData();
-
         //Set the saved preferences stuff
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -107,43 +106,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Set up the spinner.
         spCities = (Spinner) findViewById(R.id.spSubreddits);
 
-        //Use arraybundle to fill cities array.
-        cities = arrayBundle.getStringArray("cities");
+        //Update cities spinner.
+        updateCities();
 
-        //Set up the spinner adapter to use the cities string array.
-        ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, cities);
-        spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCities.setAdapter(spAdapter);
-
-        //Set up the spinner's default selection using value from playerprefs.
-        spinnerDefaultPos = sharedPrefs.getInt("spinnerVal", 0);
-        spCities.setSelection(spinnerDefaultPos);
-
-        //Set up the spinner item changed listener.
-        spCities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
-            {
-                //When the spinner value changes, set the update flag to true.
-                //This way, the application will parse the new city.
-                shouldUpdate = true;
-
-                //Set the player preferences with the spinner value.
-                SharedPreferences.Editor editor = sharedPrefs.edit();
-                editor.putInt("spinnerVal", position);
-                editor.putString("prefCity", cities[position]);
-                editor.apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView)
-            {
-
-            }
-        });
-
-        //Set the initial display
+        //Set the initial screen display
         initialDisplay = sharedPrefs.getInt("initial", -1);
     }
 
@@ -164,6 +130,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Update the initial display value
         initialDisplay = sharedPrefs.getInt("initial", -1);
 
+        //Run city updater.
+        updateCities();
+
         super.onResume();
     }
 
@@ -180,12 +149,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.About:
                 //Show the about dialog.
                 AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to change cities, and display landmarks " +
-                        "of that city on a map or list.", "About", true);
+                        "of that city on a map or list.", "About");
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.
-                AboutDialogFactory.ShowAlertDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
-                        sharedPrefs.getString("prefScreen", "Invalid"), "Preferences", false);
+                AboutDialogFactory.ShowPreferencesDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
+                        sharedPrefs.getString("prefScreen", "Invalid"), "Preferences");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -197,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         if (v.getId() == btnDisplay.getId())
         {
-            if (shouldUpdate || cbRefresh.isChecked())
+            if (shouldUpdateData || cbRefresh.isChecked())
             {
                 //If the program should update, or the refresh button is checked, update then open a view screen.
                 //The view screen will be opened after the update process in the async method's postexecute method.
@@ -215,6 +184,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Create a new intent for the population screen, and load the array bundle on.
             OpenIntent(PopulationGraphActivity.class, arrayBundle);
         }
+
+        if (v.getId() == btnManage.getId())
+        {
+            //Send the cities as a bundle to the new intent.
+            Bundle citiesBundle = new Bundle();
+            citiesBundle.putStringArrayList("cities", cities);
+
+            //Mark that we want to update the cities when we return to this screen.
+            shouldUpdateCities = true;
+
+            //Show the manager screen.
+            OpenIntent(DatabaseManagerActivity.class, citiesBundle);
+        }
     }
 
     //Wrapper method for intent handling.
@@ -228,6 +210,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Start intent.
         startActivity(intent);
+    }
+
+    public void updateCities()
+    {
+        if (shouldUpdateCities)
+        {
+            //Get the graph data bundle and read the cities list from it.
+            arrayBundle = manager.getGraphData();
+            cities = arrayBundle.getStringArrayList("cities");
+
+            //Set up the spinner to use the updated cities array.
+            ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, cities);
+            spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spCities.setAdapter(spAdapter);
+
+            //Set up the spinner's default selection using value from playerprefs.
+            spinnerDefaultPos = sharedPrefs.getInt("spinnerVal", 0);
+            spCities.setSelection(spinnerDefaultPos);
+
+            //Set up the spinner item changed listener.
+            spCities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+            {
+                @Override
+                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+                {
+                    //When the spinner value changes, set the update flag to true.
+                    //This way, the application will parse the new city.
+                    shouldUpdateData = true;
+
+                    //Set the player preferences with the spinner value.
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    editor.putInt("spinnerVal", position);
+                    editor.putString("prefCity", cities.get(position));
+                    editor.apply();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parentView)
+                {
+
+                }
+            });
+
+            //Set update flag to false
+            shouldUpdateCities = false;
+
+            Log.d("Main.updateCities", "Updating cities");
+        }
     }
 
     //This method handles the execution of the updater.
@@ -247,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Updater().execute(city.getUrl());
 
         //Set the update flag to false to avoid unnecessary updating.
-        shouldUpdate = false;
+        shouldUpdateData = false;
     }
 
     public void openDisplayScreen()
