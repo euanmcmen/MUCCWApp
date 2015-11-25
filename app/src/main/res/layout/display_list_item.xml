@@ -8,11 +8,13 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000"
         android:text="Title text"
         android:id="@+id/tvTitle"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/ivImage"/>
+        android:layout_toEndOf="@+id/ivImage"
+        android:gravity="center_horizontal"/>
 
     <ImageView
         android:layout_width="250px"
@@ -25,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000"
         android:text="Description text"
         android:id="@+id/tvDescription"
         android:layout_below="@+id/ivImage"

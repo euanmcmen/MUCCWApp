@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Spinner spCities;
     CheckBox cbRefresh;
 
-    //Create the landmark list.
+    //Create the landmark list
     ArrayList<Landmark> landmarks = null;
 
     //Create the cities array
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (shouldUpdateData || cbRefresh.isChecked())
             {
                 //If the program should update, or the refresh button is checked, update then open a view screen.
-                //The view screen will be opened after the update process in the async method's postexecute method.
+                //The display screen will be opened after the update process in the async method's postexecute method.
                 updateData();
             }
             else
@@ -263,9 +263,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //This method handles the execution of the updater.
     public void updateData()
     {
-        //Show a friendly toast to show what's happening.
-        Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
-
         //Initialise the landmarks list
         landmarks = new ArrayList<>();
 
@@ -282,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void openDisplayScreen()
     {
-        //Create bundle and place information on.
+        //Create bundle and place data on.
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("list", landmarks);
         bundle.putParcelable("coords", city.getCoordinates());
@@ -294,6 +291,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     class Updater extends AsyncTask<String, Void, Void>
     {
+        protected void onPreExecute()
+        {
+            //Show a friendly toast to show what's happening.
+            Toast.makeText(getApplicationContext(), "Updating...", Toast.LENGTH_SHORT).show();
+        }
+
         @Override
         protected Void doInBackground(String ... Params) //This is the city url.
         {
@@ -305,9 +308,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //If the result string isn't null, do some stuff with it.  It shouldn't be null.
                 if (!result.equals(""))
                 {
-                    //Create arraylist collection of landmarks.
+                    //Create arraylist collections from parser.
                     XMLParser parser = new XMLParser(result);
                     landmarks = parser.CreateCollection();
+                    //images = parser.getImages();
                 }
             }
             catch (InterruptedException | ExecutionException | XmlPullParserException | NullPointerException | IOException e)
@@ -321,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected void onPostExecute(Void result)
         {
             //Show another friendly toast.
-            Toast.makeText(getApplicationContext(), "Complete!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Complete!", Toast.LENGTH_SHORT).show();
 
             //Open the view screen after the updater has completed the background process.
             openDisplayScreen();

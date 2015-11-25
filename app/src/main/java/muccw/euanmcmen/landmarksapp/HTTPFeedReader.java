@@ -63,6 +63,9 @@ public class HTTPFeedReader
 		//Clean up the image link.
 		result = result.replace("~", "");
 
+		//Clean up the apostrophe
+		result = result.replace("&amp;#39;", "\'");
+
 		// Return the result string.
     	return result;
 	}

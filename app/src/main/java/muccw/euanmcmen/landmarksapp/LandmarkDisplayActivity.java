@@ -3,12 +3,16 @@ package muccw.euanmcmen.landmarksapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,6 +22,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -37,6 +43,9 @@ public class LandmarkDisplayActivity extends AppCompatActivity
     //The initial screen to display.
     int initialDisplay;
 
+    //This landmarks list.
+    ArrayList<Landmark> landmarks;
+
     //Shared preferences.
     SharedPreferences sharedPrefs = null;
     @Override
@@ -55,14 +64,11 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         //Get the intent to retrieve the data sent from the main activity.
+        //The landmarksList collection at this point is incomplete.
         Intent intent = getIntent();
-        ArrayList<Landmark> landmarksList = intent.getParcelableArrayListExtra("list");
+        landmarks = intent.getParcelableArrayListExtra("list");
         LatLng coords = intent.getParcelableExtra("coords");
         initialDisplay = intent.getIntExtra("initial",-1);
-
-        //Set up the list view with custom adapter and layout.
-        LandmarkAdapter adapter = new LandmarkAdapter(this, R.layout.display_list_item, landmarksList);
-        listLandmarks.setAdapter(adapter);
 
         //Fill the map with markers.
         if (mapLandmarks != null)
@@ -75,9 +81,8 @@ public class LandmarkDisplayActivity extends AppCompatActivity
             mapLandmarks.getUiSettings().setMyLocationButtonEnabled(true);
             mapLandmarks.getUiSettings().setZoomControlsEnabled(true);
 
-
             //Place markers by iterating through each landmark.
-            for (Landmark lm : landmarksList)
+            for (Landmark lm : landmarks)
             {
                 //Get marker title.
                 String mkrTitle = lm.getTitle();
@@ -90,9 +95,9 @@ public class LandmarkDisplayActivity extends AppCompatActivity
             }
         }
 
-        //Set the initial view.
-        //Log.d("LDA.onCreate", "LOADING: " + initialDisplay);
-        switcher.setDisplayedChild(initialDisplay);
+        //Complete the landmarks list by filling it with images.
+        //We do this here because we don't need images in the map view, so it doesn't matter if that code is executed before this.
+        new CompleteLandmarksTask().execute();
     }
 
 
@@ -116,15 +121,11 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         }
 
         //Create marker from parameters
-        MarkerOptions marker = new MarkerOptions().title(title).icon(BitmapDescriptorFactory.defaultMarker()).anchor(AnchorX, AnchorY).position(position);
-
-        return marker;
+        return new MarkerOptions().title(title).icon(BitmapDescriptorFactory.defaultMarker()).anchor(AnchorX, AnchorY).position(position);
     }
 
     private void switchViews()
     {
-        //Log.d("LDA.switchViews", String.valueOf("OLD: " +  String.valueOf(switcher.getDisplayedChild())));
-
         //If one screen is display, flip to the other.
         if (switcher.getDisplayedChild() == 0)
         {
@@ -141,9 +142,6 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         editor.putInt("initial", newDisplayedChild);
         editor.putString("prefScreen", getViewName(newDisplayedChild));
         editor.apply();
-
-        //Log.d("LDA.switchViews", "NEW:" + String.valueOf(newDisplayedChild));
-        //Log.d("LDA.switchViews", "NAME: " + getViewName(newDisplayedChild));
     }
 
     private String getViewName(int displayedChild)
@@ -164,8 +162,6 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_display, menu);
         return true;
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -188,6 +184,51 @@ public class LandmarkDisplayActivity extends AppCompatActivity
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    class CompleteLandmarksTask extends AsyncTask<Void, Void, Void>
+    {
+        //This class fills the images of the incomplete landmarks list.
+
+        protected void onPreExecute()
+        {
+            //Show a friendly toast to show what's happening.
+            Toast.makeText(getApplicationContext(), "Rendering.", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Void doInBackground(Void ... Params)
+        {
+            //For each landmark
+            for (int i = 0; i < landmarks.size(); i++)
+            {
+                try
+                {
+                    //Get images from location
+                    URL imageURL  = new URL(landmarks.get(i).getImageUrl());
+                    Bitmap image = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+
+                    //Put image in landmark list.
+                    landmarks.get(i).setImage(image);
+
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result)
+        {
+            //Set up the list view with custom adapter and layout.
+            LandmarkAdapter adapter = new LandmarkAdapter(getApplicationContext(), R.layout.display_list_item, landmarks);
+            listLandmarks.setAdapter(adapter);
+
+            //Set the initial view.
+            switcher.setDisplayedChild(initialDisplay);
         }
     }
 }

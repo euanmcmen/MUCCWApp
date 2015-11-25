@@ -12,6 +12,7 @@ public class Landmark implements Parcelable
 {
     private String titleText;
     private String descriptionText;
+    private String imageUrl;
     private Bitmap image;
     private double latitude;
     private double longitude;
@@ -19,8 +20,9 @@ public class Landmark implements Parcelable
     public Landmark()
     {
         //Default constructor.
-        titleText = "Default";
-        descriptionText = "Default";
+        titleText = null;
+        descriptionText = null;
+        imageUrl = null;
         image = null;
         latitude = 0.0;
         longitude = 0.0;
@@ -30,6 +32,7 @@ public class Landmark implements Parcelable
     {
         titleText = in.readString();
         descriptionText = in.readString();
+        imageUrl = in.readString();
         image = in.readParcelable(Bitmap.class.getClassLoader());
         latitude = in.readDouble();
         longitude = in.readDouble();
@@ -53,6 +56,16 @@ public class Landmark implements Parcelable
     public void setDescriptionText(String descriptionText)
     {
         this.descriptionText = descriptionText;
+    }
+
+    public String getImageUrl()
+    {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
     }
 
     public Bitmap getImage()
@@ -91,6 +104,7 @@ public class Landmark implements Parcelable
     {
         dest.writeString(titleText);
         dest.writeString(descriptionText);
+        dest.writeString(imageUrl);
         dest.writeParcelable(image, 0);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
