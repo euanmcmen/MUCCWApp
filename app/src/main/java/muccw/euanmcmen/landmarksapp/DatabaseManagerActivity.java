@@ -17,9 +17,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 import java.util.ArrayList;
 
-/**
- * Created by Euan on 24/11/2015.
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
  */
+
 public class DatabaseManagerActivity extends AppCompatActivity
 {
     //The views.
@@ -68,10 +71,10 @@ public class DatabaseManagerActivity extends AppCompatActivity
         });
     }
 
+    //Set up list view with custom adapter.
+    //This is it's own method so the list can be updated after collection changes.
     private void setupListView()
     {
-        //Set up list view with custom adapter.
-        //This is it's own method so the list can be updated after collection changes.
         DatabaseManagerAdapter adapter = new DatabaseManagerAdapter(this, R.layout.display_list_item, cities);
         listCities.setAdapter(adapter);
         listCities.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
@@ -105,6 +108,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
         });
     }
 
+    //Deletes a city from the database and list collection.
     private void deleteEntry(int position)
     {
         String removedCity = cities.get(position);
@@ -123,6 +127,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
         Log.d("DBA.DeleteEntry", removedCity + " has been deleted.");
     }
 
+    //Adds a city to the database and list collection.
     private void addEntry(String city, String url, int population, double lat, double lng)
     {
         //Create cityinfo object.
@@ -142,6 +147,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
         Log.d("DBA.AddEntry", info.getCity() + " has been added.");
     }
 
+    //Creates the context menu which lists the possible cities to add.
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo info)
     {
         super.onCreateContextMenu(menu, view, info);
@@ -151,8 +157,11 @@ public class DatabaseManagerActivity extends AppCompatActivity
         menu.add(0, view.getId(), 2, "Dundee");
     }
 
+    //Event method for context menu item selection.
     public boolean onContextItemSelected(MenuItem item)
     {
+        //Check which button is pressed and add that city if it isn't present.
+        //Display a toast to the user after.
         if (item.getTitle() == "Glasgow")
         {
             if (!cities.contains("Glasgow"))
@@ -164,7 +173,8 @@ public class DatabaseManagerActivity extends AppCompatActivity
             else
                 Toast.makeText(this, "Glasgow already exists.", Toast.LENGTH_SHORT).show();
         }
-        else if (item.getTitle() == "Edinburgh")
+
+        if (item.getTitle() == "Edinburgh")
         {
             if (!cities.contains("Edinburgh"))
             {
@@ -175,7 +185,8 @@ public class DatabaseManagerActivity extends AppCompatActivity
             else
                 Toast.makeText(this, "Edinburgh already exists.", Toast.LENGTH_SHORT).show();
         }
-        else if (item.getTitle() == "Dundee")
+
+        if (item.getTitle() == "Dundee")
         {
             if (!cities.contains("Dundee"))
             {
@@ -186,10 +197,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
             else
                 Toast.makeText(this, "Dundee already exists.", Toast.LENGTH_SHORT).show();
         }
-        else
-        {
-            return false;
-        }
+
         return true;
     }
 

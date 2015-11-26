@@ -4,9 +4,12 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
 
-/**
- * Created by Euan on 15/11/2015.
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
  */
+
 public class CityInfo implements Serializable
 {
     private String city;
@@ -15,6 +18,7 @@ public class CityInfo implements Serializable
     private double latitude;
     private double longitude;
 
+    //Standard constructor for a city object.
     public CityInfo(String city, String url, int population, double latitude, double longitude)
     {
         this.city = city;
@@ -24,7 +28,11 @@ public class CityInfo implements Serializable
         this.longitude = longitude;
     }
 
+    //Blank constructor for city object.
     public CityInfo() { }
+
+    //Getters and setters for instance variables.
+    //Auto-generated.
 
     public String getCity()
     {
@@ -76,6 +84,7 @@ public class CityInfo implements Serializable
         this.longitude = longitude;
     }
 
+    //Returns a latlng object using latitude and longitude.
     public LatLng getCoordinates()
     {
         return new LatLng(latitude, longitude);

@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,8 +24,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-//Euan McMenemin
-//S1125095
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
+ */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -50,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //This holds the arrays from the manager, and is passed into the graph screen.
     Bundle arrayBundle = null;
 
-    //Update flag.
-    //This is changed within the update method.
+    //Update flags.
+    //These control when certain parts of the screen should be updated.
     boolean shouldUpdateData = true;
     boolean shouldUpdateCities = true;
 
@@ -202,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Wrapper method for intent handling.
     private void OpenIntent(Class intentClass, Bundle bundle)
     {
+        //Show friendly toast to tell the user what's happening.
         Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
 
         //Create the intent.
@@ -223,6 +226,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cities = arrayBundle.getStringArrayList("cities");
 
             //Set up the spinner to use the updated cities array.
+            //The assert statement ensures that cities isn't null, and that code-analysis is happy.
+            assert cities != null;
             ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, cities);
             spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spCities.setAdapter(spAdapter);

@@ -5,8 +5,11 @@ import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 
-//Euan McMenemin
-//S1125095
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
+ */
 
 public class Landmark implements Parcelable
 {
@@ -17,9 +20,9 @@ public class Landmark implements Parcelable
     private double latitude;
     private double longitude;
 
+    //Default constructor.
     public Landmark()
     {
-        //Default constructor.
         titleText = null;
         descriptionText = null;
         imageUrl = null;
@@ -28,6 +31,7 @@ public class Landmark implements Parcelable
         longitude = 0.0;
     }
 
+    //Constructor which takes in a parcel.  This is necessary for the class to implement parcelable.
     public Landmark(Parcel in)
     {
         titleText = in.readString();
@@ -38,6 +42,8 @@ public class Landmark implements Parcelable
         longitude = in.readDouble();
     }
 
+    //Getters and setters for instance variables.
+    //Auto-generated.
     public String getTitle()
     {
         return titleText;
@@ -88,17 +94,20 @@ public class Landmark implements Parcelable
         this.longitude = longitude;
     }
 
+    //Returns a latlng object consisting of the latitude and longitude of the landmark.
     public LatLng getCoordinates()
     {
         return new LatLng(latitude, longitude);
     }
 
+    //Parcelable method.  Unchanged from auto-generation.
     @Override
     public int describeContents()
     {
         return 0;
     }
 
+    //Writes instance fields to a parcel.
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
@@ -110,6 +119,7 @@ public class Landmark implements Parcelable
         dest.writeDouble(longitude);
     }
 
+    //Parcel CREATOR object.  Again, unchanged from auto-generation.
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator()
     {
         public Landmark createFromParcel(Parcel in)
@@ -122,6 +132,4 @@ public class Landmark implements Parcelable
             return new Landmark[size];
         }
     };
-
-
 }

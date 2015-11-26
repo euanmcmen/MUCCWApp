@@ -9,14 +9,14 @@ import android.view.SurfaceView;
 
 import java.util.ArrayList;
 
-/**
- * Created by Euan on 21/11/2015.
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
  */
+
 public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
-    //The surface holder object.
-    private SurfaceHolder holder;
-
     //The integer array of population.
     private ArrayList<Integer> populations;
 
@@ -27,28 +27,28 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     private Canvas canvas;
 
     //The scale to which the population is drawn onto the graph.
-    //Currently 1 pixel = 1000 population units.
+    //Currently 1 pixel = 1000 population units.  (scale 1000)
     //e.g. Glasgow 600,000 population units.  Bar is 600 pixels.
-    int scale;
+    private final int scale = 1000;
 
     //This is origin for the axes.
-    int originX;
-    int originY;
+    private final int originX = 100;
+    private int originY;
 
     //Dimensions for the canvas.
-    int width;
-    int height;
+    private int width;
+    private int height;
 
     //Handles the context and holder operations.
     public PopGraphSurfaceView(Context context)
     {
         super(context);
-        holder = getHolder();
+        SurfaceHolder holder = getHolder();
         holder.addCallback(this);
         setFocusable(true);
     }
 
-    //Sets the population array.
+    //Sets the arrays.
     public void Initialise(ArrayList<String> citiesArray, ArrayList<Integer> popArray)
     {
         //Set the arrays
@@ -56,12 +56,10 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         populations = popArray;
     }
 
+    //Initialise the surface and draws elements on screen.
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
-        //Set scale.
-        scale = 1000;
-
         //Initialise canvas
         //Lock the canvas so that we may edit it.
         canvas = holder.lockCanvas();
@@ -71,7 +69,6 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         height = canvas.getHeight();
 
         //Set the origin location.
-        originX = 100;
         originY = (height - 200);
 
         //Initialise the canvas to white.
@@ -85,6 +82,7 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         holder.unlockCanvasAndPost(canvas);
     }
 
+    //Draws the graph axes on screen.
     public void drawAxes()
     {
         //Initialise the paint.
@@ -98,6 +96,7 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         canvas.drawLine(originX, originY, originX, 0, linePaint);
     }
 
+    //Draws the population graphs on screen.
     public void drawPopulationGraphs()
     {
         //This is added onto the lineLocation to draw additional lines.
@@ -142,6 +141,7 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
 
     }
 
+    //Auto generated methods.  These are unused and unchanged.
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {

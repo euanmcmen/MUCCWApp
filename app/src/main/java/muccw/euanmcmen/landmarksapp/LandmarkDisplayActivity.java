@@ -26,9 +26,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-/**
- * Created by Euan on 22/11/2015.
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
  */
+
 public class LandmarkDisplayActivity extends AppCompatActivity
 {
     //The map.
@@ -45,6 +48,8 @@ public class LandmarkDisplayActivity extends AppCompatActivity
 
     //This landmarks list.
     ArrayList<Landmark> landmarks;
+
+    //Coordinates of the city.
     LatLng coords;
 
     //Shared preferences.
@@ -72,12 +77,12 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         initialDisplay = intent.getIntExtra("initial",-1);
 
         //Complete the landmarks list by filling it with images.
-        //We do this here because we don't need images in the map view, so it doesn't matter if that code is executed before this.
+        //Map code was moved into this method so that the landmark image can be fed into the markeroptions.
         new CompleteLandmarksTask().execute();
     }
 
-
-    public MarkerOptions setMarkerOptions(String title, LatLng position, float colour, Bitmap image,  boolean shouldCentreAnchor)
+    //Create marker to place on map.
+    public MarkerOptions setMarkerOptions(String title, LatLng position, Bitmap image,  boolean shouldCentreAnchor)
     {
         float AnchorX;
         float AnchorY;
@@ -96,10 +101,11 @@ public class LandmarkDisplayActivity extends AppCompatActivity
             AnchorY = 1f;
         }
 
-        //Create marker from parameters
+        //Create marker from parameters, and use image from landmark object.
         return new MarkerOptions().title(title).icon(BitmapDescriptorFactory.fromBitmap(image)).anchor(AnchorX, AnchorY).position(position);
     }
 
+    //Switches views and updates playerpreferences.
     private void switchViews()
     {
         //If one screen is display, flip to the other.
@@ -120,10 +126,10 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         editor.apply();
     }
 
+    //Returns a string representation of the displayed view.
+    //Used in preferences.
     private String getViewName(int displayedChild)
     {
-        //Returns the name of the view displayed by the flipper.
-        //Used in preferences.
         if (displayedChild == 0)
             return "List";
         else if (displayedChild == 1)
@@ -162,11 +168,9 @@ public class LandmarkDisplayActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    //This class fills the images of the incomplete landmarks list.
     class CompleteLandmarksTask extends AsyncTask<Void, Void, Void>
     {
-        //This class fills the images of the incomplete landmarks list.
-
         protected void onPreExecute()
         {
             //Show a friendly toast to show what's happening.
@@ -176,7 +180,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Void ... Params)
         {
-            //For each landmark
+            //For each landmark...
             for (int i = 0; i < landmarks.size(); i++)
             {
                 try
@@ -223,7 +227,8 @@ public class LandmarkDisplayActivity extends AppCompatActivity
                     //Get marker location.
                     LatLng mkrPosition = lm.getCoordinates();
 
-                    MarkerOptions markerOptions = setMarkerOptions(mkrTitle, mkrPosition, 120f, lm.getImage(), true);
+                    //Place marker on map.
+                    MarkerOptions markerOptions = setMarkerOptions(mkrTitle, mkrPosition, lm.getImage(), true);
                     mapLandmarks.addMarker(markerOptions);
                 }
             }

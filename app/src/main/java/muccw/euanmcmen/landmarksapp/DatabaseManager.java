@@ -20,6 +20,12 @@ import java.lang.String;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
+ */
+
 public class DatabaseManager extends SQLiteOpenHelper
 {
     private static final int DB_VER = 1;
@@ -150,12 +156,12 @@ public class DatabaseManager extends SQLiteOpenHelper
         }
     }
 
+    //Add a city to the database.
     public void addCity(CityInfo dbEntry)
     {
         ContentValues values = new ContentValues();
 
         //Add values to the columns in the database.
-        //Don't need to add the ID value because it increments automatically.
         values.put(COL_CITY, dbEntry.getCity());
         values.put(COL_URL, dbEntry.getUrl());
         values.put(COL_POPULATION, dbEntry.getPopulation());
@@ -168,6 +174,7 @@ public class DatabaseManager extends SQLiteOpenHelper
         db.close();
     }
 
+    //Remove a city from the database.
     public boolean removeCity(String cityName)
     {
         boolean result = false;
@@ -192,6 +199,7 @@ public class DatabaseManager extends SQLiteOpenHelper
         return result;
     }
 
+    //Returns a city by specified name.
     public CityInfo getCity(String cityName)
     {
         String query = "SELECT * FROM " + TBL_SUBREDDITS + " WHERE " + COL_CITY + " =  \"" + cityName + "\"";
@@ -220,6 +228,8 @@ public class DatabaseManager extends SQLiteOpenHelper
         return result;
     }
 
+    //Returns a bundle containing an arraylist of the city names and populations.
+    //This was originally split into two methods - getCities and getPopulations - however the returned arraylists had inconsistent indexes.
     public Bundle getGraphData()
     {
         //Select all cities from the subreddits table.

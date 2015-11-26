@@ -1,7 +1,5 @@
 package muccw.euanmcmen.landmarksapp;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +7,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-//Euan McMenemin
-//S1125095
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
+ */
 
 //This class handles the interaction with the online feed, and populates the result string in the activity class.
 public class HTTPFeedReader 
@@ -47,8 +48,7 @@ public class HTTPFeedReader
 		httpCon.disconnect();
 
 		//Perform some operations on the result string.
-		//A lot of these replacements are attributed to the "plaintext" XML that we read from
-		//the datasouces' description tag.
+		//A lot of these replacements are attributed to the "plaintext" XML that we read from the datasouces' description tag.
 
 		//Open tag replacement.
 		result = result.replace("&amp;lt;", "<");

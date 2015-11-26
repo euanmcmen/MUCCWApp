@@ -8,14 +8,15 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
-/**
- * Created by Euan on 21/11/2015.
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
  */
+
 public class PopulationGraphActivity extends AppCompatActivity
 {
     //Shared preferences.

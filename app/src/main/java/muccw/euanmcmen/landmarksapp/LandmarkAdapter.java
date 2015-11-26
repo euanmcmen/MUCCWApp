@@ -9,11 +9,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
 
-//Euan McMenemin
-//S1125095
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
+ */
 
 public class LandmarkAdapter extends ArrayAdapter<Landmark>
 {
+    //Constructor for adapter object.
     public LandmarkAdapter(Context context, int resource, ArrayList<Landmark> landmarks)
     {
         //Call the super constructor
@@ -29,7 +33,7 @@ public class LandmarkAdapter extends ArrayAdapter<Landmark>
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.display_list_item, parent, false);
         }
 
-        //Get the carpark at this position
+        //Get the landmark at this position
         Landmark landmark = getItem(position);
 
         //Find views on custom list item.

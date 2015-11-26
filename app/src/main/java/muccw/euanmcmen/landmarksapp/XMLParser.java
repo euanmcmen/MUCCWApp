@@ -9,8 +9,11 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-//Euan McMenemin
-//S1125095
+/*
+ * Euan McMenemin
+ * S1125095
+ * Mobile Ubiquitous Computing Coursework
+ */
 
 //This class handles the interation with the XML string after the feed read.
 public class XMLParser 
@@ -18,17 +21,13 @@ public class XMLParser
 	//XML string fed in through the constructor.
 	private String xmlString;
 
-	//The list of parsed images.
-	//Images are too big to send in a bundle with the landmarks, so they'll be sent separately.
-	//private ArrayList<Bitmap> images;
-
 	//Constructor which takes in the string containing the XML to be parsed, and the context of the activity class.
 	public XMLParser(String xmlString)
 	{
 		this.xmlString = xmlString;
 	}
 
-	//Declare that this method throws just about every exception in the book.  Throw all exceptions to UI class like an irritated child in a pram with toys nearby.
+	//Declare that this method throws just about every exception in the book.  Throw all exceptions to main activity like they were pram toys to an irritated child.
 	public ArrayList<Landmark> CreateCollection() throws XmlPullParserException, IOException, ExecutionException, InterruptedException, NullPointerException
 	{
 		//Initialise collections
@@ -65,7 +64,6 @@ public class XMLParser
 					{
 						//Create a new landmark object to be filled with data.
 						landmark = new Landmark();
-						//Log.d("XMLParser.CreateCollec.", "Created a landmark object.");
 					}
 					break;
 				}
@@ -89,39 +87,33 @@ public class XMLParser
 					{
 						//Write the title.
 						landmark.setTitle(tagContent);
-						//Log.d("XMLParser.CreateCollec.", "Added a title.");
 					}
 
 					if (tagName.equals("ItemText"))
 					{
 						//Write the Description.
 						landmark.setDescriptionText(tagContent);
-						//Log.d("XMLParser.CreateCollec.", "Added some description.");
 					}
 
 					if (tagName.equals("ItemImage"))
 					{
 						//Write the image location.  We'll get the image from this location later.
 						landmark.setImageUrl(tagContent);
-						//images.add(BitmapFactory.decodeStream(imageURL.openConnection().getInputStream()));
 					}
 
 					if (tagName.equals("ItemLat"))
 					{
 						//Write the Latitude.
 						landmark.setLatitude(Double.parseDouble(tagContent));
-						//Log.d("XMLParser.CreateCollec.", "Added lat.");
 					}
 
 					if (tagName.equals("ItemLong"))
 					{
 						//Write the Longitude.
 						landmark.setLongitude(Double.parseDouble(tagContent));
-						//Log.d("XMLParser.CreateCollec.", "Added long.");
 
 						//As this is the last desired value, we can complete our landmark entry.
 						landmarks.add(landmark);
-						//Log.d("XMLParser.CreateCollec.", "Added the landmark to the collection.\r\nCollection length: " + landmarks.size());
 					}
 					break;
 				}
