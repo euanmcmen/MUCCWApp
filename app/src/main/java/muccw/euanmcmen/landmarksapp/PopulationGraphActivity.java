@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 
 /**
  * Created by Euan on 21/11/2015.
@@ -32,8 +35,8 @@ public class PopulationGraphActivity extends AppCompatActivity
 
         //Retrieve arrays from the intent bundle.
         Intent intent = getIntent();
-        String[] cities = intent.getStringArrayExtra("cities");
-        int[] populations = intent.getIntArrayExtra("populations");
+        ArrayList<String> cities = intent.getStringArrayListExtra("cities");
+        ArrayList<Integer> populations = intent.getIntegerArrayListExtra("populations");
 
         //Initialise the surface view.
         popGraphSurfaceView.Initialise(cities, populations);

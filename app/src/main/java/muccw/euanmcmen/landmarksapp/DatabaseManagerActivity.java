@@ -148,7 +148,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
         menu.setHeaderTitle("Add City");
         menu.add(0, view.getId(), 0, "Glasgow");
         menu.add(0, view.getId(), 1, "Edinburgh");
-        menu.add(0, view.getId(), 2, "Manchester");
+        menu.add(0, view.getId(), 2, "Dundee");
     }
 
     public boolean onContextItemSelected(MenuItem item)
@@ -175,12 +175,16 @@ public class DatabaseManagerActivity extends AppCompatActivity
             else
                 Toast.makeText(this, "Edinburgh already exists.", Toast.LENGTH_SHORT).show();
         }
-        else if (item.getTitle() == "Manchester")
+        else if (item.getTitle() == "Dundee")
         {
-            if (!cities.contains("Manchester"))
-                Toast.makeText(this, "Manchester added.", Toast.LENGTH_SHORT).show();
+            if (!cities.contains("Dundee"))
+            {
+                //Add Dundee.
+                addEntry("Dundee", "https://www.reddit.com/r/MUCCW_Dundee/.rss", 141870, 56.4781805, -3.1069149);
+                Toast.makeText(this, "Dundee added.", Toast.LENGTH_SHORT).show();
+            }
             else
-                Toast.makeText(this, "Manchester already exists.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Dundee already exists.", Toast.LENGTH_SHORT).show();
         }
         else
         {

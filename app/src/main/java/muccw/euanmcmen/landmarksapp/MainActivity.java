@@ -148,8 +148,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             case R.id.About:
                 //Show the about dialog.
-                AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to change cities, and display landmarks " +
-                        "of that city on a map or list.", "About");
+                AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to display landmarks " +
+                        "of that city.\r\n\r\nPress the Settings menu button to view preferences.", "About");
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.
@@ -202,6 +202,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Wrapper method for intent handling.
     private void OpenIntent(Class intentClass, Bundle bundle)
     {
+        Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+
         //Create the intent.
         Intent intent = new Intent(getApplicationContext(), intentClass);
 
@@ -255,8 +257,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             //Set update flag to false
             shouldUpdateCities = false;
-
-            Log.d("Main.updateCities", "Updating cities");
         }
     }
 
@@ -324,9 +324,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         protected void onPostExecute(Void result)
         {
-            //Show another friendly toast.
-            //Toast.makeText(getApplicationContext(), "Complete!", Toast.LENGTH_SHORT).show();
-
             //Open the view screen after the updater has completed the background process.
             openDisplayScreen();
         }

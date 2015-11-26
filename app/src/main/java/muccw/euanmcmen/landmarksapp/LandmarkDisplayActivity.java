@@ -45,6 +45,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
 
     //This landmarks list.
     ArrayList<Landmark> landmarks;
+    LatLng coords;
 
     //Shared preferences.
     SharedPreferences sharedPrefs = null;
@@ -67,33 +68,8 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         //The landmarksList collection at this point is incomplete.
         Intent intent = getIntent();
         landmarks = intent.getParcelableArrayListExtra("list");
-        LatLng coords = intent.getParcelableExtra("coords");
+        coords = intent.getParcelableExtra("coords");
         initialDisplay = intent.getIntExtra("initial",-1);
-
-        //Fill the map with markers.
-        if (mapLandmarks != null)
-        {
-            //Move the camera to the centre of the city.
-            //Use a temp value for now, and read from database later.
-            mapLandmarks.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 12));
-            mapLandmarks.setMyLocationEnabled(true);
-            mapLandmarks.getUiSettings().setCompassEnabled(true);
-            mapLandmarks.getUiSettings().setMyLocationButtonEnabled(true);
-            mapLandmarks.getUiSettings().setZoomControlsEnabled(true);
-
-            //Place markers by iterating through each landmark.
-            for (Landmark lm : landmarks)
-            {
-                //Get marker title.
-                String mkrTitle = lm.getTitle();
-
-                //Get marker location.
-                LatLng mkrPosition = lm.getCoordinates();
-
-                MarkerOptions markerOptions = setMarkerOptions(mkrTitle, mkrPosition, 120f, true);
-                mapLandmarks.addMarker(markerOptions);
-            }
-        }
 
         //Complete the landmarks list by filling it with images.
         //We do this here because we don't need images in the map view, so it doesn't matter if that code is executed before this.
@@ -101,7 +77,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
     }
 
 
-    public MarkerOptions setMarkerOptions(String title, LatLng position, float colour, boolean shouldCentreAnchor)
+    public MarkerOptions setMarkerOptions(String title, LatLng position, float colour, Bitmap image,  boolean shouldCentreAnchor)
     {
         float AnchorX;
         float AnchorY;
@@ -121,7 +97,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         }
 
         //Create marker from parameters
-        return new MarkerOptions().title(title).icon(BitmapDescriptorFactory.defaultMarker()).anchor(AnchorX, AnchorY).position(position);
+        return new MarkerOptions().title(title).icon(BitmapDescriptorFactory.fromBitmap(image)).anchor(AnchorX, AnchorY).position(position);
     }
 
     private void switchViews()
@@ -226,6 +202,31 @@ public class LandmarkDisplayActivity extends AppCompatActivity
             //Set up the list view with custom adapter and layout.
             LandmarkAdapter adapter = new LandmarkAdapter(getApplicationContext(), R.layout.display_list_item, landmarks);
             listLandmarks.setAdapter(adapter);
+
+            //Fill the map with markers.
+            if (mapLandmarks != null)
+            {
+                //Move the camera to the centre of the city.
+                //Use a temp value for now, and read from database later.
+                mapLandmarks.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 10));
+                mapLandmarks.setMyLocationEnabled(true);
+                mapLandmarks.getUiSettings().setCompassEnabled(true);
+                mapLandmarks.getUiSettings().setMyLocationButtonEnabled(true);
+                mapLandmarks.getUiSettings().setZoomControlsEnabled(true);
+
+                //Place markers by iterating through each landmark.
+                for (Landmark lm : landmarks)
+                {
+                    //Get marker title.
+                    String mkrTitle = lm.getTitle();
+
+                    //Get marker location.
+                    LatLng mkrPosition = lm.getCoordinates();
+
+                    MarkerOptions markerOptions = setMarkerOptions(mkrTitle, mkrPosition, 120f, lm.getImage(), true);
+                    mapLandmarks.addMarker(markerOptions);
+                }
+            }
 
             //Set the initial view.
             switcher.setDisplayedChild(initialDisplay);

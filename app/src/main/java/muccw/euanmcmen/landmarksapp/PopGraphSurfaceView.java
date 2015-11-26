@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+
 /**
  * Created by Euan on 21/11/2015.
  */
@@ -16,10 +18,10 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     private SurfaceHolder holder;
 
     //The integer array of population.
-    private int[] populations;
+    private ArrayList<Integer> populations;
 
     //The string array of cities
-    private String[] cities;
+    private ArrayList<String> cities;
 
     //The canvas object.
     private Canvas canvas;
@@ -47,7 +49,7 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     }
 
     //Sets the population array.
-    public void Initialise(String[] citiesArray, int[] popArray)
+    public void Initialise(ArrayList<String> citiesArray, ArrayList<Integer> popArray)
     {
         //Set the arrays
         cities = citiesArray;
@@ -122,17 +124,17 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         titleTextPaint.setTextSize(72);
         labelTextPaint.setTextSize(50);
 
-        for (int i = 0; i < populations.length; i++)
+        for (int i = 0; i < populations.size(); i++)
         {
-            int barHeight = originY - (populations[i] / scale);
+            int barHeight = originY - (populations.get(i) / scale);
             //Draw the rectangle bar to represent population.
             canvas.drawRect(lineLocationX - lineHalfWidth, barHeight, lineLocationX + lineHalfWidth, originY, graphPaint);
 
             //Draw the text below the bar.  The text will use the city retrieved from the cities list and will be drawn under the bar.
-            canvas.drawText(cities[i], lineLocationX - (lineHalfWidth * 1.5f), textLocationY, titleTextPaint);
+            canvas.drawText(cities.get(i), lineLocationX - (lineHalfWidth * 1.5f), textLocationY, titleTextPaint);
 
             //Draw the text on the bar to show the value.
-            canvas.drawText(String.valueOf(populations[i]), lineLocationX - (lineHalfWidth), barHeight - 100, labelTextPaint);
+            canvas.drawText(String.valueOf(populations.get(i)), lineLocationX - (lineHalfWidth), barHeight - 100, labelTextPaint);
 
             //Add the incremenet to the line location.
             lineLocationX += lineLocationXIncrement;
