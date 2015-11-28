@@ -64,7 +64,7 @@ Mobile Ubiquitous Computing Coursework
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Force Refresh On Next View"
+        android:text="Force Refresh On Press"
         android:id="@+id/cbRefresh"
         android:checked="false"
         android:layout_below="@+id/tvViewLabel"

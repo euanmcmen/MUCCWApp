@@ -17,7 +17,7 @@ import java.net.URL;
 public class HTTPFeedReader 
 {
 	//Declare that this throws the IO exception, so it can be handled in the calling class.
-	public static String ReadXMLFeed(String urlString) throws IOException
+	public static String readXMLFeed(String urlString) throws IOException
 	{
 	 	String result = "";
     	InputStream inStream;

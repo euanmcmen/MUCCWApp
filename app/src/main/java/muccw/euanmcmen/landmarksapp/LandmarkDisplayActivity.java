@@ -81,31 +81,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         new CompleteLandmarksTask().execute();
     }
 
-    //Create marker to place on map.
-    public MarkerOptions setMarkerOptions(String title, LatLng position, Bitmap image,  boolean shouldCentreAnchor)
-    {
-        float AnchorX;
-        float AnchorY;
-
-        //If anchors are to be centred.
-        if (shouldCentreAnchor)
-        {
-            //Anchor X and Y are centred.
-            AnchorX = 0.5f;
-            AnchorY = 0.5f;
-        }
-        else
-        {
-            //Anchor X is centred, Y is set to the bottom.
-            AnchorX = 0.5f;
-            AnchorY = 1f;
-        }
-
-        //Create marker from parameters, and use image from landmark object.
-        return new MarkerOptions().title(title).icon(BitmapDescriptorFactory.fromBitmap(image)).anchor(AnchorX, AnchorY).position(position);
-    }
-
-    //Switches views and updates playerpreferences.
+    //Switches views and updates preferences.
     private void switchViews()
     {
         //If one screen is display, flip to the other.
@@ -157,7 +133,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays the landmarks.\r\n" +
+                DialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays the landmarks.\r\n" +
                         "Use the Cycle button on the menu to swap displays.", "About");
                 return true;
             case R.id.Switch:
@@ -207,30 +183,19 @@ public class LandmarkDisplayActivity extends AppCompatActivity
             LandmarkAdapter adapter = new LandmarkAdapter(getApplicationContext(), R.layout.display_list_item, landmarks);
             listLandmarks.setAdapter(adapter);
 
-            //Fill the map with markers.
-            if (mapLandmarks != null)
+            //Move the camera to the centre of the city.
+            mapLandmarks.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 10));
+            mapLandmarks.setMyLocationEnabled(true);
+            mapLandmarks.getUiSettings().setCompassEnabled(true);
+            mapLandmarks.getUiSettings().setMyLocationButtonEnabled(true);
+            mapLandmarks.getUiSettings().setZoomControlsEnabled(true);
+
+            //Place markers by iterating through each landmark.
+            for (Landmark lm : landmarks)
             {
-                //Move the camera to the centre of the city.
-                //Use a temp value for now, and read from database later.
-                mapLandmarks.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 10));
-                mapLandmarks.setMyLocationEnabled(true);
-                mapLandmarks.getUiSettings().setCompassEnabled(true);
-                mapLandmarks.getUiSettings().setMyLocationButtonEnabled(true);
-                mapLandmarks.getUiSettings().setZoomControlsEnabled(true);
-
-                //Place markers by iterating through each landmark.
-                for (Landmark lm : landmarks)
-                {
-                    //Get marker title.
-                    String mkrTitle = lm.getTitle();
-
-                    //Get marker location.
-                    LatLng mkrPosition = lm.getCoordinates();
-
-                    //Place marker on map.
-                    MarkerOptions markerOptions = setMarkerOptions(mkrTitle, mkrPosition, lm.getImage(), true);
-                    mapLandmarks.addMarker(markerOptions);
-                }
+                //Place marker on map.
+                MarkerOptions markerOptions = new MarkerOptions().title(lm.getTitle()).icon(BitmapDescriptorFactory.fromBitmap(lm.getImage())).anchor(0.5f, 0.5f).position(lm.getCoordinates());
+                mapLandmarks.addMarker(markerOptions);
             }
 
             //Set the initial view.

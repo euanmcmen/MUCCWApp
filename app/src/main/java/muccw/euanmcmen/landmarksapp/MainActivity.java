@@ -94,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Set the saved preferences stuff
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        //Update the initial display value
+        initialDisplay = sharedPrefs.getInt("initial", 0);
+
         //Set up the buttons.
         btnManage = (Button) findViewById(R.id.btnManage);
         btnManage.setOnClickListener(this);
@@ -110,9 +113,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Update cities spinner.
         updateCities();
-
-        //Set the initial screen display
-        initialDisplay = sharedPrefs.getInt("initial", -1);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cbRefresh.setChecked(false);
 
         //Update the initial display value
-        initialDisplay = sharedPrefs.getInt("initial", -1);
+        initialDisplay = sharedPrefs.getInt("initial", 0);
 
         //Run city updater.
         updateCities();
@@ -150,12 +150,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             case R.id.About:
                 //Show the about dialog.
-                AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to display landmarks " +
+                DialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to display landmarks " +
                         "of that city.\r\n\r\nPress the Settings menu button to view preferences.", "About");
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.
-                AboutDialogFactory.ShowPreferencesDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
+                DialogFactory.ShowPreferencesDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
                         sharedPrefs.getString("prefScreen", "Invalid"), "Preferences");
                 return true;
             default:
@@ -168,27 +168,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         if (v.getId() == btnDisplay.getId())
         {
+            //If the program should update, or the refresh button is checked, update then open a view screen.
+            //The display screen will be opened after the update process in the async method's postexecute method.
             if (shouldUpdateData || cbRefresh.isChecked())
             {
-                //If the program should update, or the refresh button is checked, update then open a view screen.
-                //The display screen will be opened after the update process in the async method's postexecute method.
                 updateData();
             }
             else
             {
-                //Otherwise, just open the display screen.
                 openDisplayScreen();
             }
         }
 
         if (v.getId() == btnPopulation.getId())
         {
+            //Show friendly toast to tell the user what's happening.
+            Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+
             //Create a new intent for the population screen, and load the array bundle on.
-            OpenIntent(PopulationGraphActivity.class, arrayBundle);
+            openIntent(PopulationGraphActivity.class, arrayBundle);
         }
 
         if (v.getId() == btnManage.getId())
         {
+            //Show friendly toast to tell the user what's happening.
+            Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+
             //Send the cities as a bundle to the new intent.
             Bundle citiesBundle = new Bundle();
             citiesBundle.putStringArrayList("cities", cities);
@@ -197,16 +202,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             shouldUpdateCities = true;
 
             //Show the manager screen.
-            OpenIntent(DatabaseManagerActivity.class, citiesBundle);
+            openIntent(DatabaseManagerActivity.class, citiesBundle);
         }
     }
 
     //Wrapper method for intent handling.
-    private void OpenIntent(Class intentClass, Bundle bundle)
+    private void openIntent(Class intentClass, Bundle bundle)
     {
-        //Show friendly toast to tell the user what's happening.
-        Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
-
         //Create the intent.
         Intent intent = new Intent(getApplicationContext(), intentClass);
 
@@ -291,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bundle.putInt("initial", initialDisplay);
 
         //Pass the bundle and class into the intent open method.
-        OpenIntent(LandmarkDisplayActivity.class, bundle);
+        openIntent(LandmarkDisplayActivity.class, bundle);
     }
 
     class Updater extends AsyncTask<String, Void, Void>
@@ -308,16 +310,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try
             {
                 //Get the descriptions of each landmark on the datasource.
-                String result = HTTPFeedReader.ReadXMLFeed(Params[0]);
+                String result = HTTPFeedReader.readXMLFeed(Params[0]);
 
-                //If the result string isn't null, do some stuff with it.  It shouldn't be null.
-                if (!result.equals(""))
-                {
-                    //Create arraylist collections from parser.
-                    XMLParser parser = new XMLParser(result);
-                    landmarks = parser.CreateCollection();
-                    //images = parser.getImages();
-                }
+                //Create arraylist collections from parser.
+                XMLParser parser = new XMLParser(result);
+                landmarks = parser.createCollection();
             }
             catch (InterruptedException | ExecutionException | XmlPullParserException | NullPointerException | IOException e)
             {

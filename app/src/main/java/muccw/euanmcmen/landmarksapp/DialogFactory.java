@@ -10,7 +10,7 @@ import android.content.DialogInterface;
  * Mobile Ubiquitous Computing Coursework
  */
 
-public class AboutDialogFactory
+public class DialogFactory
 {
     //This method displays an alert dialog box.
     public static void ShowAlertDialog(Context appContext, String message, String title)

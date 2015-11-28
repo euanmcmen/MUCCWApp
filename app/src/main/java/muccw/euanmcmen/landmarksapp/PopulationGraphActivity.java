@@ -66,7 +66,7 @@ public class PopulationGraphActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                AboutDialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays a graph of the city populations.", "About");
+                DialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays a graph of the city populations.", "About");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -28,7 +28,7 @@ public class XMLParser
 	}
 
 	//Declare that this method throws just about every exception in the book.  Throw all exceptions to main activity like they were pram toys to an irritated child.
-	public ArrayList<Landmark> CreateCollection() throws XmlPullParserException, IOException, ExecutionException, InterruptedException, NullPointerException
+	public ArrayList<Landmark> createCollection() throws XmlPullParserException, IOException, ExecutionException, InterruptedException, NullPointerException
 	{
 		//Initialise collections
 		ArrayList<Landmark> landmarks = new ArrayList<>();
