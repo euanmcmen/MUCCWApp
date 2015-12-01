@@ -133,7 +133,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays the landmarks.\r\n" +
+                DialogFactory.showAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays the landmarks.\r\n" +
                         "Use the Cycle button on the menu to swap displays.", "About");
                 return true;
             case R.id.Switch:

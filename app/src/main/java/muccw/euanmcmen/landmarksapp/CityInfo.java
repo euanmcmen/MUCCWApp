@@ -2,15 +2,13 @@ package muccw.euanmcmen.landmarksapp;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.Serializable;
-
 /*
  * Euan McMenemin
  * S1125095
  * Mobile Ubiquitous Computing Coursework
  */
 
-public class CityInfo implements Serializable
+public class CityInfo
 {
     private String city;
     private String url;

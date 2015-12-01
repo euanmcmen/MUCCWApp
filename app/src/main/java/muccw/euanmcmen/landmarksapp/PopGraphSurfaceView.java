@@ -49,7 +49,7 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     }
 
     //Sets the arrays.
-    public void Initialise(ArrayList<String> citiesArray, ArrayList<Integer> popArray)
+    public void initialise(ArrayList<String> citiesArray, ArrayList<Integer> popArray)
     {
         //Set the arrays
         cities = citiesArray;
@@ -76,7 +76,7 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
 
         //Draw components.
         drawAxes();
-        drawPopulationGraphs();
+        drawPopulationGraph();
 
         //Unlock canvas and display.
         holder.unlockCanvasAndPost(canvas);
@@ -97,7 +97,7 @@ public class PopGraphSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     }
 
     //Draws the population graphs on screen.
-    public void drawPopulationGraphs()
+    public void drawPopulationGraph()
     {
         //This is added onto the lineLocation to draw additional lines.
         int lineLocationXIncrement = 400;

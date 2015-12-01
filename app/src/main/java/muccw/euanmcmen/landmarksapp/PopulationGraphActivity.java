@@ -40,7 +40,7 @@ public class PopulationGraphActivity extends AppCompatActivity
         ArrayList<Integer> populations = intent.getIntegerArrayListExtra("populations");
 
         //Initialise the surface view.
-        popGraphSurfaceView.Initialise(cities, populations);
+        popGraphSurfaceView.initialise(cities, populations);
 
         //Set the saved preferences stuff
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -66,7 +66,7 @@ public class PopulationGraphActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays a graph of the city populations.", "About");
+                DialogFactory.showAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays a graph of the city populations.\r\nThe X axis represents the city.\r\nThe Y axis represents the population.", "About");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

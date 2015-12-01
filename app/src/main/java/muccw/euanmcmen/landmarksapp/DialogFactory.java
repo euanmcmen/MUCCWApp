@@ -13,7 +13,7 @@ import android.content.DialogInterface;
 public class DialogFactory
 {
     //This method displays an alert dialog box.
-    public static void ShowAlertDialog(Context appContext, String message, String title)
+    public static void showAlertDialog(Context appContext, String message, String title)
     {
         //Build the alert dialog box with passed parameters.
         AlertDialog.Builder dialog = new AlertDialog.Builder(appContext);
@@ -36,7 +36,7 @@ public class DialogFactory
     }
 
     //This method displays a settings dialog box.
-    public static void ShowPreferencesDialog(Context appContext, String message, String title)
+    public static void showPreferencesDialog(Context appContext, String message, String title)
     {
         //Build the alert dialog box with passed parameters.
         AlertDialog.Builder dialog = new AlertDialog.Builder(appContext);
@@ -59,7 +59,7 @@ public class DialogFactory
     }
 
     //This method displays an confirmation dialog box.
-    public static void ShowDeleteConfirmationDialog(Context appContext, String message, String title, DialogInterface.OnClickListener clickEvent)
+    public static void showDeleteConfirmationDialog(Context appContext, String message, String title, DialogInterface.OnClickListener clickEvent)
     {
         //Build the alert dialog box with passed parameters, and use the click event listener created in calling class.
         AlertDialog.Builder dialog = new AlertDialog.Builder(appContext);

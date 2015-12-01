@@ -75,7 +75,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
     //This is it's own method so the list can be updated after collection changes.
     private void updateListView()
     {
-        DatabaseManagerAdapter adapter = new DatabaseManagerAdapter(this, R.layout.display_list_item, cities);
+        DatabaseManagerAdapter adapter = new DatabaseManagerAdapter(this, R.layout.manager_list_item, cities);
         listCities.setAdapter(adapter);
         listCities.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
         {
@@ -101,7 +101,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
                 };
 
                 //Display the confirmation box passing in the listener created.
-                DialogFactory.ShowDeleteConfirmationDialog(context, "Are you sure you want to delete this entry?", "Warning", listener);
+                DialogFactory.showDeleteConfirmationDialog(context, "Are you sure you want to delete this entry?", "Warning", listener);
 
                 return true;
             }
@@ -123,8 +123,6 @@ public class DatabaseManagerActivity extends AppCompatActivity
 
         //update the list view
         updateListView();
-
-        Log.d("DBA.DeleteEntry", removedCity + " has been deleted.");
     }
 
     //Adds a city to the database and list collection.
@@ -143,8 +141,6 @@ public class DatabaseManagerActivity extends AppCompatActivity
 
         //Update list view.
         updateListView();
-
-        Log.d("DBA.AddEntry", info.getCity() + " has been added.");
     }
 
     //Creates the context menu which lists the possible cities to add.
@@ -221,7 +217,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to edit the city collection.\r\n\r\nPress and hold a city to remove it." +
+                DialogFactory.showAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to edit the city collection.\r\n\r\nPress and hold a city to remove it." +
                         "\r\nClick Add to add an available city.", "About");
                 return true;
             default:

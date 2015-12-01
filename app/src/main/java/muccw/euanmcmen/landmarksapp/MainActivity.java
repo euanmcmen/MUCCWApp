@@ -150,12 +150,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.ShowAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to display landmarks " +
+                DialogFactory.showAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to display landmarks " +
                         "of that city.\r\n\r\nPress the Settings menu button to view preferences.", "About");
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.
-                DialogFactory.ShowPreferencesDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
+                DialogFactory.showPreferencesDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
                         sharedPrefs.getString("prefScreen", "Invalid"), "Preferences");
                 return true;
             default:
@@ -309,12 +309,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             try
             {
-                //Get the descriptions of each landmark on the datasource.
-                String result = HTTPFeedReader.readXMLFeed(Params[0]);
-
                 //Create arraylist collections from parser.
-                XMLParser parser = new XMLParser(result);
-                landmarks = parser.createCollection();
+                landmarks = XMLParser.createCollection(Params[0]);
             }
             catch (InterruptedException | ExecutionException | XmlPullParserException | NullPointerException | IOException e)
             {
