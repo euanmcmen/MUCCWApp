@@ -217,8 +217,8 @@ public class DatabaseManagerActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.showAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to edit the city collection.\r\n\r\nPress and hold a city to remove it." +
-                        "\r\nClick Add to add an available city.", "About");
+                DialogFactory.showAlertDialog(this, "This screen allows you to edit the city collection.\r\n\r\nPress and hold a city to remove it." +
+                        "\r\nClick Add and select a city to add it to the collection.", "About");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -66,7 +66,9 @@ public class PopulationGraphActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.showAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen displays a graph of the city populations.\r\nThe X axis represents the city.\r\nThe Y axis represents the population.", "About");
+                DialogFactory.showAlertDialog(this, "This screen displays a graph of each city's population." +
+                        "\r\n\r\nThe X axis represents the city." +
+                        "\r\nThe Y axis represents the population.", "About");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Uncheck the checkbox in case the user unintentionally leaves this checked and reloads.
         cbRefresh.setChecked(false);
 
-        //Update the initial display value
+        //Update the initial display value of the landmarks screen.
         initialDisplay = sharedPrefs.getInt("initial", 0);
 
         //Run city updater.
@@ -150,8 +150,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.showAlertDialog(this, "This app displays the landmarks of various Scottish cities.\r\n\r\nThis screen allows you to display landmarks " +
-                        "of that city.\r\n\r\nPress the Settings menu button to view preferences.", "About");
+                DialogFactory.showAlertDialog(this, "App author: Euan McMenemin" +
+                        "\r\n\r\nThis app displays the landmarks of various Scottish cities." +
+                        "\r\n\r\nUse the cities spinner box to select a city and press the display button to view landmarks." +
+                        "\r\nUse the manage cities button to modify the cities in the spinner." +
+                        "\r\n\r\nPress the Settings menu button to view preferences.", "About");
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.
@@ -234,8 +237,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spCities.setAdapter(spAdapter);
 
-            //Set up the spinner's default selection using value from playerprefs.
+            //set up the spinner's default selection using value from playerprefs.
             spinnerDefaultPos = sharedPrefs.getInt("spinnerVal", 0);
+
+            //If the user selects a city in the spinner, and then opens the manager to delete that selected city, and navigates back, the program will crash.
+            //This can be detected by comparing if the spinnerVal spinner value is equal to the size of the cities array.
+            //This resets the spinner value to 0 if an index bounds error occurs.
+            if (spinnerDefaultPos == cities.size())
+                spinnerDefaultPos = 0;
+
             spCities.setSelection(spinnerDefaultPos);
 
             //Set up the spinner item changed listener.
