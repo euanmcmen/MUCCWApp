@@ -134,7 +134,7 @@ public class LandmarkDisplayActivity extends AppCompatActivity
             case R.id.About:
                 //Show the about dialog.
                 DialogFactory.showAlertDialog(this, "This screen displays the landmarks retrieved from the datasource." +
-                        "\r\n\r\nUse the Switch button on the menu to swap displays.", "About");
+                        "\r\n\r\nClick the Switch button on the menu to swap displays.", "About");
                 return true;
             case R.id.Switch:
                 //Switch views.

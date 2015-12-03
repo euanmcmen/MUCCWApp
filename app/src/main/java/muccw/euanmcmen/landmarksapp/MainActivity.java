@@ -152,9 +152,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Show the about dialog.
                 DialogFactory.showAlertDialog(this, "App author: Euan McMenemin" +
                         "\r\n\r\nThis app displays the landmarks of various Scottish cities." +
-                        "\r\n\r\nUse the cities spinner box to select a city and press the display button to view landmarks." +
-                        "\r\nUse the manage cities button to modify the cities in the spinner." +
-                        "\r\n\r\nPress the Settings menu button to view preferences.", "About");
+                        "\r\n\r\nUse the cities spinner box to select a city and click the display button to view landmarks." +
+                        "\r\nClick Manage Cities button to modify the cities in the spinner." +
+                        "\r\n\r\nClick the Settings menu button to view preferences.", "About");
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.

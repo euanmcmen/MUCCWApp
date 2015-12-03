@@ -239,8 +239,8 @@ public class DatabaseManagerActivity extends AppCompatActivity implements View.O
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.showAlertDialog(this, "This screen allows you to edit the city collection.\r\n\r\nPress city to select it and click Remove to remove it from the collection." +
-                        "\r\nPress Add and select a city to add it to the collection.", "About");
+                DialogFactory.showAlertDialog(this, "This screen allows you to edit the city collection.\r\n\r\nClick a city to select it and click Remove to remove it from the collection." +
+                        "\r\nClick Add and select a city to add it to the collection.", "About");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
