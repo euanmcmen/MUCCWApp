@@ -126,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onResume()
     {
+        super.onResume();
+
         //Uncheck the checkbox in case the user unintentionally leaves this checked and reloads.
         cbRefresh.setChecked(false);
 
@@ -134,8 +136,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Run city updater.
         updateCities();
-
-        super.onResume();
     }
 
     @Override
@@ -158,8 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
             case R.id.Preferences:
                 //Show the user preferences dialog.
-                DialogFactory.showPreferencesDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Invalid.") + "\r\nPreferred layout: " +
-                        sharedPrefs.getString("prefScreen", "Invalid"), "Preferences");
+                DialogFactory.showPreferencesDialog(this, "Preferred City: " + sharedPrefs.getString("prefCity", "Glasgow.") +
+                        "\r\nPreferred layout: " + sharedPrefs.getString("prefScreen", "List"), "Preferences");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

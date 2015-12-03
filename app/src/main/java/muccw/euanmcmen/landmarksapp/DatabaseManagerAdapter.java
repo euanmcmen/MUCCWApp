@@ -30,14 +30,14 @@ public class DatabaseManagerAdapter extends ArrayAdapter<String>
         //Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null)
         {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.manager_list_item, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_activated_1, parent, false);
         }
 
         //Get the city at this position
         String city = getItem(position);
 
         //Find view on custom list item.
-        final TextView tvCity = (TextView) convertView.findViewById(R.id.tvCity);
+        TextView tvCity = (TextView) convertView.findViewById(android.R.id.text1);
 
         //Write the title of the landmark into the textview
         tvCity.setText(city);

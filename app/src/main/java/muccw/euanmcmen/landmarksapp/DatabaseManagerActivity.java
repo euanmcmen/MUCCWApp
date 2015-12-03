@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,11 +22,12 @@ import java.util.ArrayList;
  * Mobile Ubiquitous Computing Coursework
  */
 
-public class DatabaseManagerActivity extends AppCompatActivity
+public class DatabaseManagerActivity extends AppCompatActivity implements View.OnClickListener
 {
     //The views.
     ListView listCities;
     Button btnAdd;
+    Button btnRemove;
 
     //The cities list.
     ArrayList<String> cities;
@@ -38,6 +38,9 @@ public class DatabaseManagerActivity extends AppCompatActivity
     //Database manager.
     DatabaseManager manager;
 
+    //The index to delete.
+    int deleteIndex = -1;
+
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class DatabaseManagerActivity extends AppCompatActivity
         //Find views.
         listCities = (ListView) findViewById(R.id.lvCities);
         btnAdd = (Button) findViewById(R.id.btnAdd);
+        btnRemove = (Button) findViewById(R.id.btnRemove);
 
         //Get the intent to retrieve the data sent from the main activity.
         Intent intent = getIntent();
@@ -59,59 +63,33 @@ public class DatabaseManagerActivity extends AppCompatActivity
         updateListView();
 
         //Set up the button click event and context menu.
-        btnAdd.setClickable(true);
         registerForContextMenu(btnAdd);
-        btnAdd.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                v.showContextMenu();
-            }
-        });
+        btnAdd.setOnClickListener(this);
+
+        //Set up the remove button
+        btnRemove.setOnClickListener(this);
     }
 
     //Set up list view with custom adapter.
     //This is it's own method so the list can be updated after collection changes.
     private void updateListView()
     {
-        DatabaseManagerAdapter adapter = new DatabaseManagerAdapter(this, R.layout.manager_list_item, cities);
+        DatabaseManagerAdapter adapter = new DatabaseManagerAdapter(this, android.R.layout.simple_list_item_activated_1, cities);
         listCities.setAdapter(adapter);
-        listCities.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        listCities.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id)
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                //Create dialog interface for custom adapter.
-                //http://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-in-android
-                DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int button)
-                    {
-                        switch (button){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                //Removal code.
-                                deleteEntry(position);
-                                break;
-
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                break;
-                        }
-                    }
-                };
-
-                //Display the confirmation box passing in the listener created.
-                DialogFactory.showDeleteConfirmationDialog(context, "Are you sure you want to delete this entry?", "Warning", listener);
-
-                return true;
+                deleteIndex = position;
             }
         });
     }
 
-    //Deletes a city from the database and list collection.
-    private void deleteEntry(int position)
+    //Deletes selected cities from the database and list collection.
+    private void deleteEntry()
     {
-        String removedCity = cities.get(position);
+        String removedCity = cities.get(deleteIndex);
 
         //Remove from database.
         manager = new DatabaseManager(this, "CourseworkDB.s3db", null, 1);
@@ -141,6 +119,50 @@ public class DatabaseManagerActivity extends AppCompatActivity
 
         //Update list view.
         updateListView();
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        //Check the pressed button and carry out an event.
+        if (v.getId() == btnAdd.getId())
+        {
+            v.showContextMenu();
+        }
+
+        if (v.getId() == btnRemove.getId())
+        {
+            //Check that an item was selected.
+            if (deleteIndex < 0)
+            {
+                Toast.makeText(this, "Select a city first.", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                //Create dialog interface for custom adapter.
+                //http://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-in-android
+                DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int button)
+                    {
+                        switch (button)
+                        {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                //Removal code.
+                                deleteEntry();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
+
+                //Display the confirmation box passing in the listener created.
+                DialogFactory.showDeleteConfirmationDialog(context, "Are you sure you want to delete this entry?", "Warning", listener);
+            }
+        }
     }
 
     //Creates the context menu which lists the possible cities to add.
@@ -217,11 +239,13 @@ public class DatabaseManagerActivity extends AppCompatActivity
         {
             case R.id.About:
                 //Show the about dialog.
-                DialogFactory.showAlertDialog(this, "This screen allows you to edit the city collection.\r\n\r\nPress and hold a city to remove it." +
-                        "\r\nClick Add and select a city to add it to the collection.", "About");
+                DialogFactory.showAlertDialog(this, "This screen allows you to edit the city collection.\r\n\r\nPress city to select it and click Remove to remove it from the collection." +
+                        "\r\nPress Add and select a city to add it to the collection.", "About");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 }

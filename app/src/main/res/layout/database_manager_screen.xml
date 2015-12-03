@@ -13,20 +13,32 @@ Mobile Ubiquitous Computing Coursework
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="150dp"
         android:id="@+id/lvCities"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:choiceMode="singleChoice"/>
+        android:choiceMode="singleChoice"
+        android:clickable="true"/>
 
     <Button
-        android:layout_width="200dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="Add"
         android:id="@+id/btnAdd"
         android:layout_below="@+id/lvCities"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="20dp"
+        android:clickable="true"/>
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Remove"
+        android:id="@+id/btnRemove"
+        android:layout_below="@+id/lvCities"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:clickable="true"/>
 
 </RelativeLayout>
