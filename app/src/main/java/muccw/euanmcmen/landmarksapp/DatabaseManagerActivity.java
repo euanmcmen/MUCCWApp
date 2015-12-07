@@ -143,32 +143,11 @@ public class DatabaseManagerActivity extends AppCompatActivity implements View.O
             }
             else
             {
-                Log.d("fdfj;osj", cities.get(deleteIndex));
                 //Check that it isn't Glasgow.  We can't remove Glasgow.
                 if (!cities.get(deleteIndex).equals("Glasgow"))
                 {
-                    //Create dialog interface for custom adapter.
-                    //http://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-in-android
-                    DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int button)
-                        {
-                            switch (button)
-                            {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    //Removal code.
-                                    deleteEntry();
-                                    break;
-
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    break;
-                            }
-                        }
-                    };
-
-                    //Display the confirmation box passing in the listener created.
-                    DialogFactory.showDeleteConfirmationDialog(context, "Are you sure you want to delete this entry?", "Warning", listener);
+                    //Removal code.
+                    deleteEntry();
                 }
                 else
                     //If the user tries to remove Glasgow, stop them.

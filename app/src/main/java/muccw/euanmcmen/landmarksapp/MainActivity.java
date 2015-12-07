@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Show the about dialog.
                 DialogFactory.showAlertDialog(this, "App author: Euan McMenemin" +
                         "\r\n\r\nThis app displays the landmarks of various Scottish cities." +
-                        "\r\n\r\nUse the cities spinner box to select a city and click the display button to view landmarks." +
+                        "\r\n\r\nUse the cities spinner box to select a city and click the display button to view its landmarks." +
                         "\r\nClick Manage Cities button to modify the cities in the spinner." +
                         "\r\n\r\nClick the Settings menu button to view preferences.", "About");
                 return true;
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //If the user selects a city in the spinner, and then opens the manager to delete that selected city, and navigates back, the program will crash.
             //This can be detected by comparing if the spinnerVal spinner value is equal to the size of the cities array.
             //This resets the spinner value to 0 if an index bounds error occurs.
-            if (spinnerDefaultPos == cities.size())
+            if (spinnerDefaultPos >= cities.size())
                 spinnerDefaultPos = 0;
 
             spCities.setSelection(spinnerDefaultPos);
