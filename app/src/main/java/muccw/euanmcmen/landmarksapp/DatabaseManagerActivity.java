@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -89,6 +90,7 @@ public class DatabaseManagerActivity extends AppCompatActivity implements View.O
     //Deletes selected cities from the database and list collection.
     private void deleteEntry()
     {
+        //Get the city to delete.
         String removedCity = cities.get(deleteIndex);
 
         //Remove from database.
@@ -101,6 +103,8 @@ public class DatabaseManagerActivity extends AppCompatActivity implements View.O
 
         //update the list view
         updateListView();
+
+
     }
 
     //Adds a city to the database and list collection.
@@ -139,28 +143,36 @@ public class DatabaseManagerActivity extends AppCompatActivity implements View.O
             }
             else
             {
-                //Create dialog interface for custom adapter.
-                //http://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-in-android
-                DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
+                Log.d("fdfj;osj", cities.get(deleteIndex));
+                //Check that it isn't Glasgow.  We can't remove Glasgow.
+                if (!cities.get(deleteIndex).equals("Glasgow"))
                 {
-                    @Override
-                    public void onClick(DialogInterface dialog, int button)
+                    //Create dialog interface for custom adapter.
+                    //http://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-in-android
+                    DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
                     {
-                        switch (button)
+                        @Override
+                        public void onClick(DialogInterface dialog, int button)
                         {
-                            case DialogInterface.BUTTON_POSITIVE:
-                                //Removal code.
-                                deleteEntry();
-                                break;
+                            switch (button)
+                            {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Removal code.
+                                    deleteEntry();
+                                    break;
 
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    break;
+                            }
                         }
-                    }
-                };
+                    };
 
-                //Display the confirmation box passing in the listener created.
-                DialogFactory.showDeleteConfirmationDialog(context, "Are you sure you want to delete this entry?", "Warning", listener);
+                    //Display the confirmation box passing in the listener created.
+                    DialogFactory.showDeleteConfirmationDialog(context, "Are you sure you want to delete this entry?", "Warning", listener);
+                }
+                else
+                    //If the user tries to remove Glasgow, stop them.
+                    Toast.makeText(this, "Glasgow cannot be removed.", Toast.LENGTH_SHORT).show();
             }
         }
     }
